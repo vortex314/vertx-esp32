@@ -1,0 +1,12 @@
+[submodule "components/ArduinoJson"]
+	path = components/ArduinoJson
+	url = https://github.com/bblanchon/ArdduinoJson.git
+[submodule "components/etl"]
+	path = components/etl
+	url = https://github.com/ETLCPP/etl.git
+[submodule "components/esp-mqtt"]
+	path = components/esp-mqtt
+	url = https://github.com/256dpi/esp-mqtt.git
+[submodule "components/Common"]
+	path = components/Common
+	url = https://github.com/vortex314/Common.git

@@ -1,5 +1,832 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="vertx-esp32" Version="10.0.0" InternalType="">
+  <VirtualDirectory Name="main">
+    <File Name="main/main.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="build">
+    <VirtualDirectory Name="include">
+      <File Name="build/include/sdkconfig.h"/>
+      <VirtualDirectory Name="config">
+        <File Name="build/include/config/python.h"/>
+        <File Name="build/include/config/toolprefix.h"/>
+        <VirtualDirectory Name="emac">
+          <VirtualDirectory Name="task">
+            <File Name="build/include/config/emac/task/priority.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="fatfs">
+          <File Name="build/include/config/fatfs/codepage.h"/>
+          <VirtualDirectory Name="lfn">
+            <File Name="build/include/config/fatfs/lfn/none.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="timeout">
+            <File Name="build/include/config/fatfs/timeout/ms.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="fs">
+            <File Name="build/include/config/fatfs/fs/lock.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="per">
+            <VirtualDirectory Name="file">
+              <File Name="build/include/config/fatfs/per/file/cache.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="codepage">
+            <File Name="build/include/config/fatfs/codepage/437.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="monitor">
+          <File Name="build/include/config/monitor/baud.h"/>
+          <VirtualDirectory Name="baud">
+            <File Name="build/include/config/monitor/baud/115200b.h"/>
+            <VirtualDirectory Name="other">
+              <File Name="build/include/config/monitor/baud/other/val.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="wl">
+          <VirtualDirectory Name="sector">
+            <File Name="build/include/config/wl/sector/size.h"/>
+            <VirtualDirectory Name="size">
+              <File Name="build/include/config/wl/sector/size/4096.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="openssl">
+          <VirtualDirectory Name="assert">
+            <VirtualDirectory Name="do">
+              <File Name="build/include/config/openssl/assert/do/nothing.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="ulp">
+          <VirtualDirectory Name="coproc">
+            <VirtualDirectory Name="reserve">
+              <File Name="build/include/config/ulp/coproc/reserve/mem.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="tracemem">
+          <VirtualDirectory Name="reserve">
+            <File Name="build/include/config/tracemem/reserve/dram.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="brownout">
+          <File Name="build/include/config/brownout/det.h"/>
+          <VirtualDirectory Name="det">
+            <File Name="build/include/config/brownout/det/lvl.h"/>
+            <VirtualDirectory Name="lvl">
+              <VirtualDirectory Name="sel">
+                <File Name="build/include/config/brownout/det/lvl/sel/0.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="timer">
+          <VirtualDirectory Name="queue">
+            <File Name="build/include/config/timer/queue/length.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="task">
+            <File Name="build/include/config/timer/task/priority.h"/>
+            <VirtualDirectory Name="stack">
+              <File Name="build/include/config/timer/task/stack/depth.h"/>
+              <File Name="build/include/config/timer/task/stack/size.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="partition">
+          <VirtualDirectory Name="table">
+            <File Name="build/include/config/partition/table/filename.h"/>
+            <VirtualDirectory Name="custom">
+              <File Name="build/include/config/partition/table/custom/filename.h"/>
+              <VirtualDirectory Name="app">
+                <VirtualDirectory Name="bin">
+                  <File Name="build/include/config/partition/table/custom/app/bin/offset.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="single">
+              <File Name="build/include/config/partition/table/single/app.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="number">
+          <VirtualDirectory Name="of">
+            <VirtualDirectory Name="universal">
+              <VirtualDirectory Name="mac">
+                <File Name="build/include/config/number/of/universal/mac/address.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="int">
+          <File Name="build/include/config/int/wdt.h"/>
+          <VirtualDirectory Name="wdt">
+            <VirtualDirectory Name="timeout">
+              <File Name="build/include/config/int/wdt/timeout/ms.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="check">
+              <File Name="build/include/config/int/wdt/check/cpu1.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="bt">
+          <VirtualDirectory Name="reserve">
+            <File Name="build/include/config/bt/reserve/dram.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="bootloader">
+          <VirtualDirectory Name="vddsdio">
+            <File Name="build/include/config/bootloader/vddsdio/boost.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="flashmode">
+          <File Name="build/include/config/flashmode/dio.h"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="stack">
+          <File Name="build/include/config/stack/check.h"/>
+          <VirtualDirectory Name="check">
+            <File Name="build/include/config/stack/check/norm.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="esp32">
+          <VirtualDirectory Name="enable">
+            <VirtualDirectory Name="coredump">
+              <VirtualDirectory Name="to">
+                <File Name="build/include/config/esp32/enable/coredump/to/none.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="rtc">
+            <VirtualDirectory Name="clock">
+              <VirtualDirectory Name="source">
+                <VirtualDirectory Name="internal">
+                  <File Name="build/include/config/esp32/rtc/clock/source/internal/rc.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="clk">
+              <VirtualDirectory Name="cal">
+                <File Name="build/include/config/esp32/rtc/clk/cal/cycles.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="pthread">
+            <VirtualDirectory Name="task">
+              <VirtualDirectory Name="stack">
+                <VirtualDirectory Name="size">
+                  <File Name="build/include/config/esp32/pthread/task/stack/size/default.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+              <VirtualDirectory Name="prio">
+                <File Name="build/include/config/esp32/pthread/task/prio/default.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="apptrace">
+            <VirtualDirectory Name="dest">
+              <File Name="build/include/config/esp32/apptrace/dest/none.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="lock">
+              <File Name="build/include/config/esp32/apptrace/lock/enable.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="deep">
+            <VirtualDirectory Name="sleep">
+              <VirtualDirectory Name="wakeup">
+                <File Name="build/include/config/esp32/deep/sleep/wakeup/delay.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="xtal">
+            <File Name="build/include/config/esp32/xtal/freq.h"/>
+            <VirtualDirectory Name="freq">
+              <File Name="build/include/config/esp32/xtal/freq/40.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="default">
+            <VirtualDirectory Name="cpu">
+              <VirtualDirectory Name="freq">
+                <File Name="build/include/config/esp32/default/cpu/freq/mhz.h"/>
+                <File Name="build/include/config/esp32/default/cpu/freq/160.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="wifi">
+            <VirtualDirectory Name="rx">
+              <VirtualDirectory Name="ba">
+                <File Name="build/include/config/esp32/wifi/rx/ba/win.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="nvs">
+              <File Name="build/include/config/esp32/wifi/nvs/enabled.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="ampdu">
+              <VirtualDirectory Name="rx">
+                <File Name="build/include/config/esp32/wifi/ampdu/rx/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="tx">
+                <File Name="build/include/config/esp32/wifi/ampdu/tx/enabled.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="static">
+              <VirtualDirectory Name="rx">
+                <VirtualDirectory Name="buffer">
+                  <File Name="build/include/config/esp32/wifi/static/rx/buffer/num.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="tx">
+              <VirtualDirectory Name="buffer">
+                <File Name="build/include/config/esp32/wifi/tx/buffer/type.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="ba">
+                <File Name="build/include/config/esp32/wifi/tx/ba/win.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="dynamic">
+              <VirtualDirectory Name="rx">
+                <VirtualDirectory Name="buffer">
+                  <File Name="build/include/config/esp32/wifi/dynamic/rx/buffer/num.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+              <VirtualDirectory Name="tx">
+                <File Name="build/include/config/esp32/wifi/dynamic/tx/buffer.h"/>
+                <VirtualDirectory Name="buffer">
+                  <File Name="build/include/config/esp32/wifi/dynamic/tx/buffer/num.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="debug">
+            <File Name="build/include/config/esp32/debug/ocdaware.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="phy">
+            <VirtualDirectory Name="max">
+              <VirtualDirectory Name="wifi">
+                <VirtualDirectory Name="tx">
+                  <File Name="build/include/config/esp32/phy/max/wifi/tx/power.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+              <VirtualDirectory Name="tx">
+                <File Name="build/include/config/esp32/phy/max/tx/power.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="calibration">
+              <VirtualDirectory Name="and">
+                <VirtualDirectory Name="data">
+                  <File Name="build/include/config/esp32/phy/calibration/and/data/storage.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="panic">
+            <VirtualDirectory Name="print">
+              <File Name="build/include/config/esp32/panic/print/reboot.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="time">
+            <VirtualDirectory Name="syscall">
+              <VirtualDirectory Name="use">
+                <VirtualDirectory Name="rtc">
+                  <File Name="build/include/config/esp32/time/syscall/use/rtc/frc1.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="esptoolpy">
+          <File Name="build/include/config/esptoolpy/after.h"/>
+          <File Name="build/include/config/esptoolpy/flashsize.h"/>
+          <File Name="build/include/config/esptoolpy/port.h"/>
+          <File Name="build/include/config/esptoolpy/baud.h"/>
+          <File Name="build/include/config/esptoolpy/before.h"/>
+          <File Name="build/include/config/esptoolpy/flashmode.h"/>
+          <File Name="build/include/config/esptoolpy/compressed.h"/>
+          <File Name="build/include/config/esptoolpy/flashfreq.h"/>
+          <VirtualDirectory Name="flashfreq">
+            <File Name="build/include/config/esptoolpy/flashfreq/40m.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="flashsize">
+            <File Name="build/include/config/esptoolpy/flashsize/detect.h"/>
+            <File Name="build/include/config/esptoolpy/flashsize/2mb.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="baud">
+            <File Name="build/include/config/esptoolpy/baud/921600b.h"/>
+            <VirtualDirectory Name="other">
+              <File Name="build/include/config/esptoolpy/baud/other/val.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="after">
+            <File Name="build/include/config/esptoolpy/after/reset.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="before">
+            <File Name="build/include/config/esptoolpy/before/reset.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="esp">
+          <VirtualDirectory Name="mqtt">
+            <File Name="build/include/config/esp/mqtt/enabled.h"/>
+            <VirtualDirectory Name="event">
+              <VirtualDirectory Name="queue">
+                <File Name="build/include/config/esp/mqtt/event/queue/size.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="task">
+              <VirtualDirectory Name="stack">
+                <File Name="build/include/config/esp/mqtt/task/stack/priority.h"/>
+                <File Name="build/include/config/esp/mqtt/task/stack/size.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="system">
+          <VirtualDirectory Name="event">
+            <VirtualDirectory Name="queue">
+              <File Name="build/include/config/system/event/queue/size.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="task">
+              <VirtualDirectory Name="stack">
+                <File Name="build/include/config/system/event/task/stack/size.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="heap">
+          <VirtualDirectory Name="poisoning">
+            <File Name="build/include/config/heap/poisoning/comprehensive.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="udp">
+          <VirtualDirectory Name="recvmbox">
+            <File Name="build/include/config/udp/recvmbox/size.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="spiffs">
+          <File Name="build/include/config/spiffs/cache.h"/>
+          <VirtualDirectory Name="max">
+            <File Name="build/include/config/spiffs/max/partitions.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="cache">
+            <File Name="build/include/config/spiffs/cache/wr.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="use">
+            <File Name="build/include/config/spiffs/use/magic.h"/>
+            <File Name="build/include/config/spiffs/use/mtime.h"/>
+            <VirtualDirectory Name="magic">
+              <File Name="build/include/config/spiffs/use/magic/length.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="page">
+            <File Name="build/include/config/spiffs/page/check.h"/>
+            <File Name="build/include/config/spiffs/page/size.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="obj">
+            <VirtualDirectory Name="name">
+              <File Name="build/include/config/spiffs/obj/name/len.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="meta">
+            <File Name="build/include/config/spiffs/meta/length.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="gc">
+            <VirtualDirectory Name="max">
+              <File Name="build/include/config/spiffs/gc/max/runs.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="libsodium">
+          <VirtualDirectory Name="use">
+            <VirtualDirectory Name="mbedtls">
+              <File Name="build/include/config/libsodium/use/mbedtls/sha.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="dma">
+          <VirtualDirectory Name="rx">
+            <VirtualDirectory Name="buf">
+              <File Name="build/include/config/dma/rx/buf/num.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="tx">
+            <VirtualDirectory Name="buf">
+              <File Name="build/include/config/dma/tx/buf/num.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="ipc">
+          <VirtualDirectory Name="task">
+            <VirtualDirectory Name="stack">
+              <File Name="build/include/config/ipc/task/stack/size.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="newlib">
+          <VirtualDirectory Name="stdin">
+            <VirtualDirectory Name="line">
+              <VirtualDirectory Name="ending">
+                <File Name="build/include/config/newlib/stdin/line/ending/cr.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="stdout">
+            <VirtualDirectory Name="line">
+              <VirtualDirectory Name="ending">
+                <File Name="build/include/config/newlib/stdout/line/ending/crlf.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="task">
+          <File Name="build/include/config/task/wdt.h"/>
+          <VirtualDirectory Name="wdt">
+            <VirtualDirectory Name="timeout">
+              <File Name="build/include/config/task/wdt/timeout/s.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="check">
+              <VirtualDirectory Name="idle">
+                <VirtualDirectory Name="task">
+                  <File Name="build/include/config/task/wdt/check/idle/task/cpu1.h"/>
+                  <File Name="build/include/config/task/wdt/check/idle/task/cpu0.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="log">
+          <File Name="build/include/config/log/colors.h"/>
+          <VirtualDirectory Name="bootloader">
+            <File Name="build/include/config/log/bootloader/level.h"/>
+            <VirtualDirectory Name="level">
+              <File Name="build/include/config/log/bootloader/level/info.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="default">
+            <File Name="build/include/config/log/default/level.h"/>
+            <VirtualDirectory Name="level">
+              <File Name="build/include/config/log/default/level/info.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="console">
+          <VirtualDirectory Name="uart">
+            <File Name="build/include/config/console/uart/default.h"/>
+            <File Name="build/include/config/console/uart/baudrate.h"/>
+            <File Name="build/include/config/console/uart/num.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="freertos">
+          <File Name="build/include/config/freertos/hz.h"/>
+          <VirtualDirectory Name="max">
+            <VirtualDirectory Name="task">
+              <VirtualDirectory Name="name">
+                <File Name="build/include/config/freertos/max/task/name/len.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="assert">
+            <VirtualDirectory Name="on">
+              <VirtualDirectory Name="untested">
+                <File Name="build/include/config/freertos/assert/on/untested/function.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="fail">
+              <File Name="build/include/config/freertos/assert/fail/abort.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="coretimer">
+            <File Name="build/include/config/freertos/coretimer/0.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="interrupt">
+            <File Name="build/include/config/freertos/interrupt/backtrace.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="thread">
+            <VirtualDirectory Name="local">
+              <VirtualDirectory Name="storage">
+                <File Name="build/include/config/freertos/thread/local/storage/pointers.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="queue">
+            <VirtualDirectory Name="registry">
+              <File Name="build/include/config/freertos/queue/registry/size.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="idle">
+            <VirtualDirectory Name="task">
+              <File Name="build/include/config/freertos/idle/task/stacksize.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="check">
+            <VirtualDirectory Name="stackoverflow">
+              <File Name="build/include/config/freertos/check/stackoverflow/canary.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="isr">
+            <File Name="build/include/config/freertos/isr/stacksize.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="optimization">
+          <VirtualDirectory Name="assertions">
+            <File Name="build/include/config/optimization/assertions/enabled.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="level">
+            <File Name="build/include/config/optimization/level/debug.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="four">
+          <VirtualDirectory Name="universal">
+            <VirtualDirectory Name="mac">
+              <File Name="build/include/config/four/universal/mac/address.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="lwip">
+          <VirtualDirectory Name="so">
+            <File Name="build/include/config/lwip/so/rcvbuf.h"/>
+            <File Name="build/include/config/lwip/so/reuse.h"/>
+            <VirtualDirectory Name="reuse">
+              <File Name="build/include/config/lwip/so/reuse/rxtoall.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="max">
+            <File Name="build/include/config/lwip/max/sockets.h"/>
+            <VirtualDirectory Name="listening">
+              <File Name="build/include/config/lwip/max/listening/tcp.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="raw">
+              <File Name="build/include/config/lwip/max/raw/pcbs.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="udp">
+              <File Name="build/include/config/lwip/max/udp/pcbs.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="active">
+              <File Name="build/include/config/lwip/max/active/tcp.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="netif">
+            <File Name="build/include/config/lwip/netif/loopback.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="loopback">
+            <VirtualDirectory Name="max">
+              <File Name="build/include/config/lwip/loopback/max/pbufs.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="dhcp">
+            <VirtualDirectory Name="max">
+              <VirtualDirectory Name="ntp">
+                <File Name="build/include/config/lwip/dhcp/max/ntp/servers.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="does">
+              <VirtualDirectory Name="arp">
+                <File Name="build/include/config/lwip/dhcp/does/arp/check.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="dhcps">
+            <VirtualDirectory Name="max">
+              <VirtualDirectory Name="station">
+                <File Name="build/include/config/lwip/dhcps/max/station/num.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="lease">
+              <File Name="build/include/config/lwip/dhcps/lease/unit.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="etharp">
+            <VirtualDirectory Name="trust">
+              <VirtualDirectory Name="ip">
+                <File Name="build/include/config/lwip/etharp/trust/ip/mac.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="memmap">
+          <File Name="build/include/config/memmap/smp.h"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="ip">
+          <VirtualDirectory Name="lost">
+            <VirtualDirectory Name="timer">
+              <File Name="build/include/config/ip/lost/timer/interval.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="btdm">
+          <VirtualDirectory Name="controller">
+            <VirtualDirectory Name="pinned">
+              <VirtualDirectory Name="to">
+                <File Name="build/include/config/btdm/controller/pinned/to/core.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="tcp">
+          <File Name="build/include/config/tcp/msl.h"/>
+          <File Name="build/include/config/tcp/mss.h"/>
+          <File Name="build/include/config/tcp/maxrtx.h"/>
+          <File Name="build/include/config/tcp/synmaxrtx.h"/>
+          <VirtualDirectory Name="wnd">
+            <File Name="build/include/config/tcp/wnd/default.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="snd">
+            <VirtualDirectory Name="buf">
+              <File Name="build/include/config/tcp/snd/buf/default.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="queue">
+            <File Name="build/include/config/tcp/queue/ooseq.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="recvmbox">
+            <File Name="build/include/config/tcp/recvmbox/size.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="oversize">
+            <File Name="build/include/config/tcp/oversize/mss.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="tcpip">
+          <VirtualDirectory Name="task">
+            <VirtualDirectory Name="stack">
+              <File Name="build/include/config/tcpip/task/stack/size.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="recvmbox">
+            <File Name="build/include/config/tcpip/recvmbox/size.h"/>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="spi">
+          <VirtualDirectory Name="flash">
+            <VirtualDirectory Name="writing">
+              <VirtualDirectory Name="dangerous">
+                <VirtualDirectory Name="regions">
+                  <File Name="build/include/config/spi/flash/writing/dangerous/regions/aborts.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="rom">
+              <VirtualDirectory Name="driver">
+                <File Name="build/include/config/spi/flash/rom/driver/patch.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="app">
+          <File Name="build/include/config/app/offset.h"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="main">
+          <VirtualDirectory Name="task">
+            <VirtualDirectory Name="stack">
+              <File Name="build/include/config/main/task/stack/size.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="mbedtls">
+          <VirtualDirectory Name="rc4">
+            <File Name="build/include/config/mbedtls/rc4/disabled.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="pem">
+            <VirtualDirectory Name="write">
+              <File Name="build/include/config/mbedtls/pem/write/c.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="parse">
+              <File Name="build/include/config/mbedtls/pem/parse/c.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="tls">
+            <File Name="build/include/config/mbedtls/tls/client.h"/>
+            <File Name="build/include/config/mbedtls/tls/enabled.h"/>
+            <File Name="build/include/config/mbedtls/tls/server.h"/>
+            <VirtualDirectory Name="server">
+              <VirtualDirectory Name="and">
+                <File Name="build/include/config/mbedtls/tls/server/and/client.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="ecdh">
+            <File Name="build/include/config/mbedtls/ecdh/c.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="have">
+            <File Name="build/include/config/mbedtls/have/time.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="aes">
+            <File Name="build/include/config/mbedtls/aes/c.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="gcm">
+            <File Name="build/include/config/mbedtls/gcm/c.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="ssl">
+            <File Name="build/include/config/mbedtls/ssl/alpn.h"/>
+            <File Name="build/include/config/mbedtls/ssl/renegotiation.h"/>
+            <VirtualDirectory Name="max">
+              <VirtualDirectory Name="content">
+                <File Name="build/include/config/mbedtls/ssl/max/content/len.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="proto">
+              <File Name="build/include/config/mbedtls/ssl/proto/tls1.h"/>
+              <VirtualDirectory Name="tls1">
+                <File Name="build/include/config/mbedtls/ssl/proto/tls1/2.h"/>
+                <File Name="build/include/config/mbedtls/ssl/proto/tls1/1.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="session">
+              <File Name="build/include/config/mbedtls/ssl/session/tickets.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="ccm">
+            <File Name="build/include/config/mbedtls/ccm/c.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="key">
+            <VirtualDirectory Name="exchange">
+              <File Name="build/include/config/mbedtls/key/exchange/rsa.h"/>
+              <VirtualDirectory Name="elliptic">
+                <File Name="build/include/config/mbedtls/key/exchange/elliptic/curve.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="ecdh">
+                <File Name="build/include/config/mbedtls/key/exchange/ecdh/rsa.h"/>
+                <File Name="build/include/config/mbedtls/key/exchange/ecdh/ecdsa.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="dhe">
+                <File Name="build/include/config/mbedtls/key/exchange/dhe/rsa.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="ecdhe">
+                <File Name="build/include/config/mbedtls/key/exchange/ecdhe/rsa.h"/>
+                <File Name="build/include/config/mbedtls/key/exchange/ecdhe/ecdsa.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="hardware">
+            <File Name="build/include/config/mbedtls/hardware/aes.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="x509">
+            <VirtualDirectory Name="csr">
+              <VirtualDirectory Name="parse">
+                <File Name="build/include/config/mbedtls/x509/csr/parse/c.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <VirtualDirectory Name="crl">
+              <VirtualDirectory Name="parse">
+                <File Name="build/include/config/mbedtls/x509/crl/parse/c.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+          <VirtualDirectory Name="ecdsa">
+            <File Name="build/include/config/mbedtls/ecdsa/c.h"/>
+          </VirtualDirectory>
+          <VirtualDirectory Name="ecp">
+            <File Name="build/include/config/mbedtls/ecp/c.h"/>
+            <VirtualDirectory Name="nist">
+              <File Name="build/include/config/mbedtls/ecp/nist/optim.h"/>
+            </VirtualDirectory>
+            <VirtualDirectory Name="dp">
+              <VirtualDirectory Name="secp384r1">
+                <File Name="build/include/config/mbedtls/ecp/dp/secp384r1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="curve25519">
+                <File Name="build/include/config/mbedtls/ecp/dp/curve25519/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="bp384r1">
+                <File Name="build/include/config/mbedtls/ecp/dp/bp384r1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="secp224r1">
+                <File Name="build/include/config/mbedtls/ecp/dp/secp224r1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="bp256r1">
+                <File Name="build/include/config/mbedtls/ecp/dp/bp256r1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="secp521r1">
+                <File Name="build/include/config/mbedtls/ecp/dp/secp521r1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="secp256k1">
+                <File Name="build/include/config/mbedtls/ecp/dp/secp256k1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="secp192r1">
+                <File Name="build/include/config/mbedtls/ecp/dp/secp192r1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="secp192k1">
+                <File Name="build/include/config/mbedtls/ecp/dp/secp192k1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="bp512r1">
+                <File Name="build/include/config/mbedtls/ecp/dp/bp512r1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="secp224k1">
+                <File Name="build/include/config/mbedtls/ecp/dp/secp224k1/enabled.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="secp256r1">
+                <File Name="build/include/config/mbedtls/ecp/dp/secp256r1/enabled.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+        <VirtualDirectory Name="make">
+          <VirtualDirectory Name="warn">
+            <VirtualDirectory Name="undefined">
+              <File Name="build/include/config/make/warn/undefined/variables.h"/>
+            </VirtualDirectory>
+          </VirtualDirectory>
+        </VirtualDirectory>
+      </VirtualDirectory>
+    </VirtualDirectory>
+  </VirtualDirectory>
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00010001N0005Debug000000000000]]>
@@ -553,6 +1380,7 @@
       </VirtualDirectory>
     </VirtualDirectory>
     <VirtualDirectory Name="vertx">
+      <File Name="components/vertx/SpiVerticle.h"/>
       <File Name="components/vertx/Hardware_ESP32.cpp"/>
       <File Name="components/vertx/Wifi.cpp"/>
       <File Name="components/vertx/LedBlinker.h"/>

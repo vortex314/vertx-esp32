@@ -1,28 +1,20 @@
-# vertx-esp8266
+# vertx-esp32
 
-The purpose is to have a framework for small embedded devices that have the ease of integration and development
+The purpose is to have a framework for small embedded devices that have the ease of integration and development.
 
-Historically I started with MQTT framework which forces everything in a publish/subscribe pattern. 
+This framework is based on the ideas that also live  in Vertx and Node.js.
 
-The Vertx framework is like node.js and is fully event driven;
-
-The target is to integrate into a bigger Vertx cluster , Java based that contains the more complex logic. 
-
-A basic ingredient is the Eventbus that spans all devices and PC participants
-
-Inside a Java context the Eventbus is using JSONObject messages to communicate.
-
-Within a microcontroller I considered other serialization methods, with the possibility to translate to JSON when needed.
-
-2 Serailization forms :
-. CBOR with a map key/values which is very much type aware
-. FlatBuffer which helps to parse withou creating copies. ( To investigate )
-
-On the TODO :
-. create a Worker Verticle based on a dedicated thread of FreeRTOS
-. create a Verticle based on the coroutines of FreeRTOS which share a common thread
-. port to ESP32 
-. Create an internal Eventbus high-speed
-. Gateway to/from JSON Vertx JSON based Eventbus
-# vertx-esp32 
-# vertx-esp32 
+Elements included :
+. Loosely coupled and autonomous objects
+. An eventbus to send message between different objects 
+. Eventbus addressing is based on addresses formulated as strings, internally these are converted to unique id's ( 16 bit ) which are more performant to do the routing
+. Use of lambda's to specify event handlers 
+. Verticles / Objects are eventLoop tasks ( VerticleCoRoutine ) or independent FreeRTos tasks ( VerticleTask ). Attention need to be paid when handlers are asyn invoked between Freertos tasks
+. Serialization of messages on the Eventbus are based on CBOR binary serialization which proves to be efficient 
+. The framework comes with a list of Objects :
+.. Wifi : to signal connection setup and disconnection
+.. Mqtt : assure publishing of events to mqtt server and maintain connection
+.. Config : assures store of persistent config items
+.. Telnet : CLI interface for chaning config
+.. Monitor : reports task state to logger
+.. Hardware : abstraction interface for peripherals

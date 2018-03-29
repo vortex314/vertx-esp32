@@ -36,11 +36,11 @@ public:
 
     DigitalIn_ESP32(PhysicalPin pin): _gpio(pin), _pinChange(DIN_NONE) {};
     static DigitalIn& create(PhysicalPin pin);
-     int read()
+    int read()
     {
         return gpio_get_level((gpio_num_t)_gpio);
     }
-     Erc init()
+    Erc init()
     {
         esp_err_t erc;
         INFO(" DigitalIn Init %d ", _gpio);
@@ -76,18 +76,18 @@ public:
         return gpio_config(&io_conf);
     }
 
-     Erc deInit()
+    Erc deInit()
     {
         return E_OK;
     };
-     Erc onChange(PinChange pinChange, FunctionPointer fp, void *object)
+    Erc onChange(PinChange pinChange, FunctionPointer fp, void *object)
     {
         _pinChange = pinChange;
         _fp = fp;
         _object = object;
         return E_OK;
     }
-     PhysicalPin getPin()
+    PhysicalPin getPin()
     {
         return _gpio;
     }
@@ -286,20 +286,20 @@ Erc I2C_ESP32::write(uint8_t b)
 Erc I2C_ESP32::read(uint8_t* data, uint32_t size)
 {
     if (size == 0) {
-    return E_OK;
-  }
-  i2c_cmd_handle_t cmd = i2c_cmd_link_create();
-  i2c_master_start(cmd);
-  i2c_master_write_byte(cmd, (_slaveAddress << 1) | I2C_MASTER_READ,
-                        ACK_CHECK_EN);
-  if (size > 1) {
-    i2c_master_read(cmd, data, size - 1, (i2c_ack_type_t)ACK_VAL);
-  }
-  i2c_master_read_byte(cmd, data + size - 1, (i2c_ack_type_t)NACK_VAL);
-  i2c_master_stop(cmd);
-  esp_err_t ret = i2c_master_cmd_begin(_port, cmd, 1000 / portTICK_RATE_MS);
-  i2c_cmd_link_delete(cmd);
-  return ret;
+        return E_OK;
+    }
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    i2c_master_start(cmd);
+    i2c_master_write_byte(cmd, (_slaveAddress << 1) | I2C_MASTER_READ,
+                          ACK_CHECK_EN);
+    if (size > 1) {
+        i2c_master_read(cmd, data, size - 1, (i2c_ack_type_t)ACK_VAL);
+    }
+    i2c_master_read_byte(cmd, data + size - 1, (i2c_ack_type_t)NACK_VAL);
+    i2c_master_stop(cmd);
+    esp_err_t ret = i2c_master_cmd_begin(_port, cmd, 1000 / portTICK_RATE_MS);
+    i2c_cmd_link_delete(cmd);
+    return ret;
 }
 
 I2C& I2C::create(PhysicalPin scl, PhysicalPin sda)
@@ -317,29 +317,41 @@ esp_adc_cal_characteristics_t _characteristics;
 //#define ADC1_TEST_CHANNEL (ADC1_CHANNEL_6)  // GPIO 34
 #define ADC1_TEST_CHANNEL (ADC1_CHANNEL_5)  // GPIO 33
 
-ADC::ADC(uint32_t pin)
+class ADC_ESP32 : public ADC
 {
-    _pin = pin;
+    PhysicalPin _pin;
+public:
+    ADC_ESP32(PhysicalPin pin){
+        _pin=pin;
+    }
+    Erc init()
+    {
+        esp_err_t erc;
+        erc = adc1_config_width(ADC_WIDTH_BIT_12);
+        if (erc) ERROR("adc1_config_width(): %d", erc);
+        erc = adc1_config_channel_atten(ADC1_TEST_CHANNEL, ADC_ATTEN_DB_11);
+        if (erc) ERROR("adc1_config_channel_atten():%d", erc);
+        esp_adc_cal_get_characteristics(V_REF, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12,
+                                        &_characteristics);
+
+        return E_OK;
+    }
+
+    float getValue()
+    {
+        uint32_t voltage = adc1_to_voltage(ADC1_TEST_CHANNEL, &_characteristics);
+        return voltage / 1000.0;
+    }
+
+};
+
+ADC& ADC::create(PhysicalPin  pin)
+{
+    ADC_ESP32* ptr = new ADC_ESP32(pin);
+    return *ptr;
 }
 
-Erc ADC::init()
-{
-    esp_err_t erc;
-    erc = adc1_config_width(ADC_WIDTH_BIT_12);
-    if (erc) ERROR("adc1_config_width(): %d", erc);
-    erc = adc1_config_channel_atten(ADC1_TEST_CHANNEL, ADC_ATTEN_DB_11);
-    if (erc) ERROR("adc1_config_channel_atten():%d", erc);
-    esp_adc_cal_get_characteristics(V_REF, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12,
-                                    &_characteristics);
 
-    return E_OK;
-}
-
-float ADC::getValue()
-{
-    uint32_t voltage = adc1_to_voltage(ADC1_TEST_CHANNEL, &_characteristics);
-    return voltage / 1000.0;
-}
 
 /*******************************************************************************
 
@@ -482,8 +494,9 @@ public:
     {
         return E_OK;
     }
-    
-    Erc setHwSelect(bool b){
+
+    Erc setHwSelect(bool b)
+    {
         return E_OK;
     }
 };
@@ -648,6 +661,13 @@ I2C& Connector::getI2C()
     lockPin(LP_SCL);
     _i2c = new I2C_ESP32(toPin(LP_SCL), toPin(LP_SDA));
     return *_i2c;
+};
+
+ADC& Connector::getADC(LogicalPin pin)
+{
+    lockPin(LP_SDA);
+    ADC* adc = new ADC_ESP32(toPin(pin));
+    return *adc;
 };
 
 DigitalOut& Connector::getDigitalOut(LogicalPin lp)

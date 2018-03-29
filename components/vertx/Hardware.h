@@ -98,7 +98,7 @@ public:
 class Spi : public Driver
 {
 public:
-    public:
+public:
     typedef enum {  SPI_MODE_PHASE0_POL0 =0,
                     SPI_MODE_PHASE1_POL0= 1,
                     SPI_MODE_PHASE0_POL1= 2,
@@ -131,12 +131,12 @@ public:
 
 class ADC
 {
-    uint32_t _pin;
 
 public:
-    ADC(uint32_t pin);
-    Erc init();
-    float getValue();
+    static ADC& create(PhysicalPin pin);
+    
+    virtual Erc init()=0;
+    virtual float getValue()=0;
 };
 
 class Connector
@@ -147,6 +147,7 @@ class Connector
     UART *_uart;
     Spi *_spi;
     I2C *_i2c;
+    ADC *_adc;
 
 private:
     uint32_t toPin(uint32_t logicalPin);
@@ -164,7 +165,7 @@ public:
     I2C &getI2C();
     DigitalIn &getDigitalIn(LogicalPin);
     DigitalOut &getDigitalOut(LogicalPin);
-    ADC &getADC();
+    ADC &getADC(LogicalPin);
     // PWM& getPWM();
 };
 

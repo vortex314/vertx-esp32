@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="vertx-esp32" Version="10.0.0" InternalType="">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
   <VirtualDirectory Name="main">
     <File Name="main/main.cpp"/>
   </VirtualDirectory>
@@ -827,11 +832,6 @@
       </VirtualDirectory>
     </VirtualDirectory>
   </VirtualDirectory>
-  <Plugins>
-    <Plugin Name="qmake">
-      <![CDATA[00010001N0005Debug000000000000]]>
-    </Plugin>
-  </Plugins>
   <Reconciliation>
     <Regexes/>
     <Excludepaths/>
@@ -843,6 +843,10 @@
   </Reconciliation>
   <VirtualDirectory Name="components">
     <VirtualDirectory Name="Peripheral">
+      <File Name="components/Peripheral/MotorServo.cpp"/>
+      <File Name="components/Peripheral/MotorServo.h"/>
+      <File Name="components/Peripheral/BTS7960.cpp"/>
+      <File Name="components/Peripheral/BTS7960.h"/>
       <File Name="components/Peripheral/UltraSonic.cpp"/>
       <File Name="components/Peripheral/UltraSonic.h"/>
       <File Name="components/Peripheral/Compass.cpp"/>

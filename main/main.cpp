@@ -19,6 +19,7 @@
 #include <Property.h>
 #include <Compass.h>
 #include <UltraSonic.h>
+#include <MotorServo.h>
 
 // esp_err_t event_handler(void *ctx, system_event_t *event) { return ESP_OK; }
 
@@ -70,9 +71,10 @@ Mdns mdns("mdns");
 Mqtt mqtt("mqtt");
 PropertyVerticle prop("props");
 Connector uext1(1);
-Compass compass("compass",uext1);
-Connector uext3(3);
-UltraSonic us("ultraSonic",uext3);
+MotorServo motorServo("servo",uext1);
+//Compass compass("compass",uext1);
+//Connector uext3(3);
+//UltraSonic us("ultraSonic",uext3);
 
 
 

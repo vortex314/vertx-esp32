@@ -2,7 +2,9 @@
 #define MQTT_H
 #include <vertx.h>
 #include <Erc.h>
+extern "C" {
 #include <esp_mqtt.h>
+};
 
 #define HOST_LENGTH 40
 #define USER_LENGTH 40

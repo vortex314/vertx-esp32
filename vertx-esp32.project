@@ -837,9 +837,9 @@
     <Excludepaths/>
     <Ignorefiles/>
     <Extensions>
-      <![CDATA[*.h;*.cpp]]>
+      <![CDATA[*.h;*.cpp;.mk]]>
     </Extensions>
-    <Topleveldir>/home/lieven/workspace/vertx-esp32</Topleveldir>
+    <Topleveldir>../vertx-esp32</Topleveldir>
   </Reconciliation>
   <VirtualDirectory Name="components">
     <VirtualDirectory Name="Peripheral">

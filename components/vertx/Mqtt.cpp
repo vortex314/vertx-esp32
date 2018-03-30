@@ -134,7 +134,7 @@ void Mqtt::publish(const char *topic, uint8_t *payload, size_t len, int qos,
     if (!esp_mqtt_publish(topic, payload, len, qos, retained)) {
         ERROR(" mqtt publish failed : %s size:%d ", topic, len);
         esp_mqtt_stop();
-        esp_mqtt_start(_host.c_str(), _port, _clientId.c_str(), _user.c_str(),
+        esp_mqtt_start(_host.c_str(), "1883", _clientId.c_str(), _user.c_str(),
                        _password.c_str());
     } else {
         // INFO(" published %s", topic);
@@ -148,7 +148,7 @@ void Mqtt::run()
         PT_WAIT_SIGNAL(1000);
         if ( hasSignal(SIG_WIFI_CONNECTED )) {
 
-            esp_mqtt_start(_host.c_str(), _port, _clientId.c_str(), _user.c_str(),
+            esp_mqtt_start(_host.c_str(), "1883", _clientId.c_str(), _user.c_str(),
                            _password.c_str());
         } else if ( hasSignal(SIG_WIFI_DISCONNECTED )) {
             esp_mqtt_stop();

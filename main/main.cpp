@@ -69,12 +69,15 @@ Monitor monitor("monitor");
 Telnet telnet("telnet");
 Mdns mdns("mdns");
 Mqtt mqtt("mqtt");
-PropertyVerticle prop("props");
-Connector uext1(1);
-MotorServo motorServo("servo",uext1);
-//Compass compass("compass",uext1);
-//Connector uext3(3);
-//UltraSonic us("ultraSonic",uext3);
+PropertyVerticle prop("property");
+Connector uext2(2);
+MotorServo motorServo("servo",uext2);
+/*Connector uext1(1);
+Compass compass("compass",uext1);
+Connector uext3(3);
+UltraSonic us("ultraSonic",uext3);*/
+#include <Controller.h>
+//Controller controller("controller");
 
 
 
@@ -82,6 +85,8 @@ extern "C" void app_main()
 {
  //       config.clear();
     nvs_flash_init();
+    
+
 
     config.load();
     config.setNameSpace("system");
@@ -94,10 +99,10 @@ extern "C" void app_main()
     INFO(" host : %s",hn.c_str());
     Sys::hostname(hn.c_str());
     
-    eb.on("wifi/connected", [](Message& evt) {
+    eb.on("mqtt/connected", [](Message& evt) {
         led.setInterval(1000);
     });
-    eb.on("wifi/disconnected", [](Message& evt) {
+    eb.on("mqtt/disconnected", [](Message& evt) {
         led.setInterval(100);
     });
 

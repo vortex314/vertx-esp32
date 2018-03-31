@@ -29,6 +29,7 @@ class DigitalIn_ESP32 : public DigitalIn
 {
 private:
     PhysicalPin _gpio;
+    Mode _mode;
     void* _object;
     FunctionPointer _fp;
     PinChange _pinChange;
@@ -62,7 +63,8 @@ public:
 
         io_conf.pin_bit_mask = (1 << _gpio);    // bit mask of the pins
         io_conf.mode = GPIO_MODE_INPUT;         // set as input mode
-        io_conf.pull_up_en = (gpio_pullup_t)0;  // enable pull-up mode
+        io_conf.pull_up_en = (gpio_pullup_t)(_mode&DIN_PULL_UP ?1:0);  // enable pull-up mode
+        io_conf.pull_down_en = (gpio_pulldown_t)(_mode&DIN_PULL_DOWN ?1:0);
 
 #define ESP_INTR_FLAG_DEFAULT 0
         if (_fp) {
@@ -80,6 +82,11 @@ public:
     {
         return E_OK;
     };
+    Erc setMode(DigitalIn::Mode m)
+    {
+        _mode=m;
+        return E_OK;
+    }
     Erc onChange(PinChange pinChange, FunctionPointer fp, void *object)
     {
         _pinChange = pinChange;
@@ -151,6 +158,7 @@ public:
             return gpio_set_level((gpio_num_t)_gpio, 0);
         }
     }
+
     PhysicalPin getPin()
     {
         return _gpio;
@@ -310,37 +318,104 @@ I2C& I2C::create(PhysicalPin scl, PhysicalPin sda)
 
 //========================================================   A D C
 #include "esp_adc_cal.h"
+#include "driver/adc.h"
 
 esp_adc_cal_characteristics_t _characteristics;
 
 #define V_REF 1100
-//#define ADC1_TEST_CHANNEL (ADC1_CHANNEL_6)  // GPIO 34
-#define ADC1_TEST_CHANNEL (ADC1_CHANNEL_5)  // GPIO 33
+
+static void check_efuse()
+{
+    //Check TP is burned into eFuse
+    if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP) == ESP_OK) {
+        printf("eFuse Two Point: Supported\n");
+    } else {
+        printf("eFuse Two Point: NOT supported\n");
+    }
+
+    //Check Vref is burned into eFuse
+    if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_VREF) == ESP_OK) {
+        printf("eFuse Vref: Supported\n");
+    } else {
+        printf("eFuse Vref: NOT supported\n");
+    }
+}
+
+typedef enum {ADC1=1,ADC2,ADC3,ADC4,ADC5,ADC6} AdcUnit;
+
+struct  AdcEntry {
+    PhysicalPin pin;
+    uint32_t channel;
+    AdcUnit unit;
+
+} AdcTable[]= {
+    {33,ADC1_CHANNEL_5,ADC1},
+    {34,ADC1_CHANNEL_6,ADC1},
+    {13,ADC2_GPIO13_CHANNEL,ADC2},
+    {15,ADC2_GPIO15_CHANNEL,ADC2},
+    {36,ADC1_GPIO36_CHANNEL,ADC1},
+    {39,ADC1_GPIO39_CHANNEL,ADC1}
+}; // INCOMPLETE !!
 
 class ADC_ESP32 : public ADC
 {
     PhysicalPin _pin;
+    uint32_t _channel;
+    AdcUnit _unit;
 public:
-    ADC_ESP32(PhysicalPin pin){
+    ADC_ESP32(PhysicalPin pin)
+    {
         _pin=pin;
+        _channel=(adc1_channel_t)0;
+        uint32_t channels=sizeof(AdcTable)/sizeof(struct AdcEntry);
+        for(int i=0; i<channels; i++) {
+            if ( AdcTable[i].pin==_pin) {
+                _channel=AdcTable[i].channel;
+                _unit = AdcTable[i].unit;
+                return;
+            }
+        }
+        ERROR("ADC channel not found for pin %d",pin);
     }
     Erc init()
     {
+        if ( _channel==0 ) return EINVAL;
         esp_err_t erc;
-        erc = adc1_config_width(ADC_WIDTH_BIT_12);
-        if (erc) ERROR("adc1_config_width(): %d", erc);
-        erc = adc1_config_channel_atten(ADC1_TEST_CHANNEL, ADC_ATTEN_DB_11);
-        if (erc) ERROR("adc1_config_channel_atten():%d", erc);
-        esp_adc_cal_get_characteristics(V_REF, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12,
-                                        &_characteristics);
+        if ( _unit==ADC1 ) {
+            erc = adc1_config_width(ADC_WIDTH_BIT_10);
+            if (erc) ERROR("adc1_config_width(): %d", erc);
+            erc = adc1_config_channel_atten((adc1_channel_t)_channel, ADC_ATTEN_DB_11);
+            if (erc) ERROR("adc1_config_channel_atten():%d", erc);
+            /*           esp_adc_cal_get_characteristics(V_REF, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12,
+                                                       &_characteristics);*/
+        } else if ( _unit==ADC2 ) {
+            //    erc = adc2_config_channel_atten((adc2_channel_t)_channel, ADC_ATTEN_DB_11);
+            erc = adc2_config_channel_atten(ADC2_GPIO15_CHANNEL, ADC_ATTEN_DB_11);
+            if (erc) ERROR("adc2_config_channel_atten():%d:%s", erc,esp_err_to_name(erc));
+        }
+        check_efuse();
 
         return E_OK;
     }
 
     float getValue()
     {
-        uint32_t voltage = adc1_to_voltage(ADC1_TEST_CHANNEL, &_characteristics);
-        return voltage / 1000.0;
+        if ( _unit==ADC1 ) {
+            uint32_t voltage= adc1_get_raw((adc1_channel_t)_channel);
+            //   uint32_t voltage = adc1_to_voltage((adc1_channel_t)_channel, &_characteristics);
+            return voltage ;
+        } else if ( _unit==ADC2) {
+            int voltage ;
+            esp_err_t r = adc2_get_raw( (adc2_channel_t)_channel, ADC_WIDTH_10Bit, &voltage);
+            if ( r==ESP_OK ) {
+                return voltage;
+            } else {
+                return -1.0;
+            }
+        } else {
+            return -2;
+        }
+
     }
 
 };
@@ -633,9 +708,11 @@ Connector::Connector(uint32_t idx)    // defined by PCB layout
 
 PhysicalPin Connector::toPin(uint32_t logicalPin)
 {
-    INFO(" logical %d => %d physial ", logicalPin, _physicalPins[logicalPin]);
+    INFO(" logical %d => %d physical ", logicalPin, _physicalPins[logicalPin]);
     return _physicalPins[logicalPin];
 }
+
+const char* sLogicalPin[]= {"TXD","RXD","SCL","SDA","MISO","MOSI","SCK","CS"};
 
 UART& Connector::getUART()
 {
@@ -686,8 +763,12 @@ DigitalIn& Connector::getDigitalIn(LogicalPin lp)
 
 void Connector::lockPin(LogicalPin lp)
 {
-    if (_pinsUsed & lp) ERROR(" PIN in use %d >>>>>>>>>>>>>>>>>> ", lp);
-    _pinsUsed |= (1 << lp);
+    if (_pinsUsed & lp) {
+        ERROR(" PIN in use %d : %s  >>>>>>>>>>>>>>>>>> ", lp,sLogicalPin[lp]);
+    } else {
+        INFO(" PIN locked : %d :%s",lp,sLogicalPin[lp]);
+        _pinsUsed |= (1 << lp);
+    }
 }
 
 /*

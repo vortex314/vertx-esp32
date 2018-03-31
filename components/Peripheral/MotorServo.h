@@ -7,10 +7,10 @@
 class MotorServo : VerticleCoRoutine
 {
     BTS7960 _bts7960;
-    float _target;
+ /*   float _target;
     float _direction;
     float _voltage;
-    float _max,_min;
+    float _max,_min;*/
 public:
     MotorServo(const char* name,Connector& connector);
     ~MotorServo();

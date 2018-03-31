@@ -32,6 +32,9 @@ class Mqtt : public VerticleCoRoutine {
     Str _topicTxd;
     Str _messageTxd;
     bool _busyTxd;
+    Str _messageRxd;
+    Str _topicRxd;
+    Message _messageEb;
 
  public:
   Mqtt(const char* name);

@@ -8,6 +8,7 @@
 class Compass : public VerticleCoRoutine {
   HMC5883L _hmc;
   struct Vector _v;
+  int32_t _x,_y,_z;
 
  public:
   Compass(const char* name, I2C& i2c) ;

@@ -837,12 +837,18 @@
     <Excludepaths/>
     <Ignorefiles/>
     <Extensions>
-      <![CDATA[*.h;*.cpp;.mk]]>
+      <![CDATA[*.h;*.cpp;*..mk]]>
     </Extensions>
-    <Topleveldir>../vertx-esp32</Topleveldir>
+    <Topleveldir>/home/lieven/workspace/vertx-esp32</Topleveldir>
   </Reconciliation>
   <VirtualDirectory Name="components">
     <VirtualDirectory Name="Peripheral">
+      <File Name="components/Peripheral/Controller.cpp"/>
+      <File Name="components/Peripheral/Controller.h"/>
+      <File Name="components/Peripheral/Pot.cpp"/>
+      <File Name="components/Peripheral/Pot.h"/>
+      <File Name="components/Peripheral/Led.cpp"/>
+      <File Name="components/Peripheral/Led.h"/>
       <File Name="components/Peripheral/MotorServo.cpp"/>
       <File Name="components/Peripheral/MotorServo.h"/>
       <File Name="components/Peripheral/BTS7960.cpp"/>
@@ -857,6 +863,88 @@
       <File Name="components/Peripheral/HCSR04.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="etl">
+      <File Name="components/etl/unittest-cpp/tests/TestXmlTestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestUnitTestPP.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestTimeConstraintMacro.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestTimeConstraint.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestTestSuite.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestTestRunner.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestTestResults.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestTestMacros.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestTestList.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestTest.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestRequireMacrosWithExceptionsOn.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestRequireMacrosWithExceptionsOff.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestMemoryOutStream.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestLongMacros.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestExceptions.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestDeferredTestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestCurrentTest.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestCompositeTestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestChecks.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestCheckMacros.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/TestAssertHandler.cpp"/>
+      <File Name="components/etl/unittest-cpp/tests/ScopedCurrentTest.h"/>
+      <File Name="components/etl/unittest-cpp/tests/RecordingReporter.h"/>
+      <File Name="components/etl/unittest-cpp/tests/Main.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/XmlTestReporter.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/XmlTestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Win32/TimeHelpers.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Win32/TimeHelpers.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/UnitTestPP.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/UnitTest++.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TimeHelpers.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TimeConstraint.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TimeConstraint.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/ThrowingTestReporter.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/ThrowingTestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestSuite.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestRunner.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestRunner.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestResults.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestResults.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestReporterStdout.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestReporterStdout.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestReporter.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestMacros.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestList.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestList.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestDetails.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/TestDetails.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Test.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Test.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/RequiredCheckTestReporter.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/RequiredCheckTestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/RequiredCheckException.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/RequiredCheckException.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/RequireMacros.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/ReportAssertImpl.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/ReportAssert.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/ReportAssert.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Posix/TimeHelpers.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Posix/TimeHelpers.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Posix/SignalTranslator.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Posix/SignalTranslator.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/MemoryOutStream.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/MemoryOutStream.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/HelperMacros.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/ExecuteTest.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/ExceptionMacros.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/DeferredTestResult.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/DeferredTestResult.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/DeferredTestReporter.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/DeferredTestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/CurrentTest.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/CurrentTest.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Config.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/CompositeTestReporter.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/CompositeTestReporter.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Checks.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/Checks.cpp"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/CheckMacros.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/AssertException.h"/>
+      <File Name="components/etl/unittest-cpp/UnitTest++/AssertException.cpp"/>
       <VirtualDirectory Name="test">
         <File Name="components/etl/test/test_bloom_filter.cpp"/>
         <File Name="components/etl/test/test_bsd_checksum.cpp"/>

@@ -5,16 +5,19 @@
 #include <Property.h>
 #include "HCSR04.h"
 
-class UltraSonic : public VerticleCoRoutine {
-  HCSR04 _hcsr;
+class UltraSonic : public VerticleCoRoutine
+{
+    HCSR04 _hcsr;
+    int32_t _distance;
+    int32_t _delay;
 
- public:
-  UltraSonic(const char* name, Connector& connector);
-  UltraSonic(const char* name, DigitalOut& pinTrigger, DigitalIn& pinEcho);
-  virtual ~UltraSonic(){};
+public:
+    UltraSonic(const char* name, Connector& connector);
+    UltraSonic(const char* name, DigitalOut& pinTrigger, DigitalIn& pinEcho);
+    virtual ~UltraSonic() {};
 
-  void start() ;
-  void run() ;
+    void start() ;
+    void run() ;
 };
 
 #endif // ULTRASONIC_H

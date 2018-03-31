@@ -7,9 +7,10 @@ class BTS7960
     DigitalOut& _left;
     DigitalOut& _right;
     DigitalOut& _enable;
+
     ADC& _current;
     ADC& _position;
-    float _voltage,_target,_min,_max,_zero;
+    float _min,_max,_zero;
     float _angleTarget;
     float _angleCurrent;
 public:
@@ -19,7 +20,7 @@ public:
     void init();
     void loop();
     void calcTarget(float v);
-    float getPosition();
+    float getAngle();
     void motorStop();
     void motorLeft();
     void motorRight();

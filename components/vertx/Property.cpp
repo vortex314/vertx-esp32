@@ -18,7 +18,7 @@ bool alive=true;
 void PropertyVerticle::start()
 {
     new PropertyReference<bool>("system/alive",alive,5000);
-    new PropertyFunction<uint64_t>("system/upTime",Sys::millis,5000);
+    new PropertyFunction<uint32_t>("system/upTime",Sys::sec,5000);
     new PropertyFunction<uint32_t>("system/heap",Sys::getFreeHeap,5000);
     new PropertyFunction<uint64_t>("system/serialId",Sys::getSerialId,5000);
     eb.on("mqtt/connected",[this](Message& msg) {
@@ -26,6 +26,20 @@ void PropertyVerticle::start()
     });
     eb.on("mqtt/disconnected",[this](Message& msg) {
         _mqttConnected=false;
+    });
+    eb.on("property/set",[this](Message& msg) {
+        uid_t key;
+        if ( msg.get(H("key"),key) && msg.get(H("value"),_message)) {
+            Property* p = Property::findByUid(key);
+            if ( p ) {
+                p->fromJson(_message);
+            } else {
+                ERROR(" didn't find property ")
+            }
+        } else {
+            ERROR(" didn't find key & value ");
+        }
+
     });
     VerticleCoRoutine::start();
 }
@@ -60,16 +74,25 @@ void PropertyVerticle::run()
         while(_mqttConnected ) {
             _currentProp=Property::first();
             while (_currentProp ) {
-                if ( _currentProp->_timeout < Sys::millis()) {
+                if ( (_currentProp->_timeout < Sys::millis()) || _currentProp->hasChanged() ) {
                     sendProp(_currentProp);
- //                   _currentProp=Property::first();
+//                   _currentProp=Property::first();
                     PT_WAIT(10);
                 }
                 _currentProp=_currentProp->next();
             }
-            PT_WAIT(100);
+            PT_WAIT(10);
         };
 
     }
     PT_END();
+}
+
+Property* Property::findByUid(uid_t uid)
+{
+    Property* ptr=0;
+    for ( ptr=first(); ptr!=0; ptr=ptr->next()) {
+        if ( ptr->uid()==uid) return ptr;
+    }
+    return 0;
 }

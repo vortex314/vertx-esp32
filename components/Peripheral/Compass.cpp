@@ -39,9 +39,9 @@ void Compass::start()
 
     // Set calibration offset. See HMC5883L_calibration.ino
     _hmc.setOffset(0, 0);
-    new PropertyReference<float>("compass/x",_v.XAxis,1000);
-    new PropertyReference<float>("compass/y",_v.YAxis,1000);
-    new PropertyReference<float>("compass/z",_v.ZAxis,1000);
+    new PropertyReference<int32_t>("compass/x",_x,1000);
+    new PropertyReference<int32_t>("compass/y",_y,1000);
+    new PropertyReference<int32_t>("compass/z",_z,1000);
     VerticleCoRoutine::start();
 }
 
@@ -50,9 +50,12 @@ void Compass::run()
 
     PT_BEGIN();
     while(true) {
-        PT_WAIT_SIGNAL(500);
+        PT_WAIT_SIGNAL(100);
         _v = _hmc.readNormalize();
-        INFO("%f:%f:%f", _v.XAxis, _v.YAxis, _v.ZAxis);
+//        INFO("%f:%f:%f", _v.XAxis, _v.YAxis, _v.ZAxis);
+        _x = _x + ( _v.XAxis -_x)/4;
+        _y = _y + ( _v.YAxis -_y )/4;
+        _z = _z + (_v.ZAxis-_z)/4;
     }
     PT_END();
 }

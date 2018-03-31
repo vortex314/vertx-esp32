@@ -36,7 +36,7 @@ uint64_t HCSR04::getTime() {
   return _delta_usec;
 }
 
-float HCSR04::getCentimeters() {
+uint32_t HCSR04::getCentimeters() {
   float ctm = getTime();
   ctm /= 58.0;
   return ctm;

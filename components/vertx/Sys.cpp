@@ -56,6 +56,10 @@ uint64_t Sys::millis()
     return Sys::micros() / 1000;
 }
 
+uint32_t Sys::sec(){
+    return millis()/1000;
+}
+
  uint64_t Sys::micros()
 {
     return   esp_timer_get_time();    

@@ -163,7 +163,7 @@ public:
     {
         return getKeyValue(uid,var);
     };
-    template <typename T> Message& put(uid_t uid,T& var)
+    template <typename T> Message& put(uid_t uid,T var)
     {
         addKeyValue(uid,var);
         return *this;

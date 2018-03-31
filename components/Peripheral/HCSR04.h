@@ -17,7 +17,7 @@ class HCSR04 {
   HCSR04(DigitalOut&, DigitalIn&);
   Erc init();
   Erc trigger();
-  float getCentimeters();
+  uint32_t getCentimeters();
   uint64_t getTime();
   static void onEcho(void* obj);
 };

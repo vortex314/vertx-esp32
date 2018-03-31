@@ -59,11 +59,17 @@ public:
                    DIN_FALL,
                    DIN_CHANGE
                  } PinChange;
+                 
+    typedef enum {
+        DIN_PULL_UP=1,
+        DIN_PULL_DOWN=2
+    } Mode;
     static DigitalIn& create(PhysicalPin pin);
     virtual int read() = 0;
     virtual Erc init() = 0;
     virtual Erc deInit() = 0;
     virtual Erc onChange(PinChange pinChange, FunctionPointer fp, void *object) = 0;
+    virtual Erc setMode(Mode m);
     virtual PhysicalPin getPin() = 0;
 };
 //===================================================== GPIO DigitalOut

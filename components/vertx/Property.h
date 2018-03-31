@@ -16,10 +16,16 @@ public:
         _timeout = Sys::millis()+interval;
         add(this);
     }
-    virtual void toJson(Str&) {};
+    virtual void toJson(Str&) { ERROR("");};
+    virtual void fromJson(Str&) {ERROR("");};
+    static Property* findByUid(uid_t uid);
     void updated(){
         _timeout=Sys::millis()-1;
     }
+    virtual bool hasChanged() {
+        return false;
+    }
+    uid_t uid() { return _uid;};
 
 };
 
@@ -28,6 +34,7 @@ class PropertyReference : public Property
 {
 public:
     T& _var;
+    T _oldVar;
 
     PropertyReference(const char* name,T& var,uint32_t interval) : Property(name,interval),_var(var) {
     }
@@ -36,24 +43,70 @@ public:
     }
     void toJson(Str& msg) {
         msg.append(_var);
+        _oldVar=_var;
     }
+    void fromJson(Str& msg){
+        msg.parse(_var);
+    }
+    bool hasChanged() {
+        if ( _var == _oldVar ) return false;
+        return true;
+    }
+
 };
 
 template <typename T>
 class PropertyFunction : public Property
 {
+    T _oldVar;
 public:
-    std::function<T()> _f;
-
-    PropertyFunction(const char* name,std::function<T ()> f,uint32_t interval) : Property(name,interval),_f(f) {
+    std::function<T()> _fRead;
+    PropertyFunction(const char* name,std::function<T ()> fRead,uint32_t interval) : Property(name,interval),_fRead(fRead) {
     }
-
+ 
     ~PropertyFunction() {
     }
     void toJson(Str& msg) {
-        msg.append(_f());
+        msg.append(_fRead());
+        _oldVar = _fRead();
+    }
+    bool hasChanged(){
+        if ( _fRead()==_oldVar) return false;
+        return true;
     }
 };
+
+template <typename T>
+class PropertyWriteFunction : public Property
+{
+    T _oldVar;
+public:
+    std::function<T()> _fRead;
+    std::function<Erc(T&v)> _fWrite;
+
+    
+    PropertyWriteFunction(const char* name,std::function<T ()> fRead,std::function<Erc (T& input)> fWrite,uint32_t interval) 
+        : Property(name,interval),_fRead(fRead),_fWrite(fWrite) {
+    }
+
+    ~PropertyWriteFunction() {
+    }
+    void toJson(Str& msg) {
+        msg.append(_fRead());
+        _oldVar = _fRead();
+    }
+    void fromJson(Str& msg){
+        T var;
+        msg.parse(var);
+        _fWrite(var);
+    }
+    bool hasChanged(){
+        if ( _fRead()==_oldVar) return false;
+        return true;
+    }
+
+};
+
 
 
 class PropertyVerticle : public VerticleCoRoutine

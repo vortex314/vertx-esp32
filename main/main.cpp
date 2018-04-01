@@ -86,8 +86,6 @@ extern "C" void app_main()
  //       config.clear();
     nvs_flash_init();
     
-
-
     config.load();
     config.setNameSpace("system");
 
@@ -111,8 +109,4 @@ extern "C" void app_main()
         pv->start();
 
     config.save();
- /*   while (1) {
-        esp_task_wdt_reset();
-        vTaskDelay(100);
-    }*/
 }

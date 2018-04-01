@@ -7,6 +7,8 @@
 class MotorServo : VerticleCoRoutine
 {
     BTS7960 _bts7960;
+    int32_t _angleCurrent;
+    int32_t _angleTarget;
  /*   float _target;
     float _direction;
     float _voltage;

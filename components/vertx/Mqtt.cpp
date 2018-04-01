@@ -106,7 +106,7 @@ void Mqtt::onMessageReceived(const char *topic, uint8_t *payload,
             break;
         }
         idx++;
-        
+
     }
 
     if ( (idx > 1 ) && offsetSlash[0] && offsetSlash[1] && offsetSlash[2] && offsetSlash[3]==0 ) { // found 3 slashes
@@ -137,12 +137,14 @@ void Mqtt::start()
     _clientId = Sys::hostname();
     config.get("user", _user, "");
     config.get("password", _password, "");
+
     _willTopic = "src/";
     _willTopic += Sys::hostname();
     _willTopic += "/system/alive";
-    //    config.get("mqtt.willTopic",_willTopic,_willTopic.c_str());
-    config.get("willMessage", _willMessage, "false");
-    config.get("keepAlive", _keepAlive, 20);
+    _willMessage= "false";
+    _keepAlive = 5;
+    //   esp_mqtt_lwt(_willTopic.c_str(), _willMessage.c_str(), 1, false); // implemented in 0.5 however breaks
+    
     esp_mqtt_init(onStatusChange, onMessage, 256, 2000);
     eb.on("wifi/connected",[this](Message& msg) {
         _wifiConnected=true;

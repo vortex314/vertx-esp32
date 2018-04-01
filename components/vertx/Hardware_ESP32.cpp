@@ -317,6 +317,19 @@ I2C& I2C::create(PhysicalPin scl, PhysicalPin sda)
 }
 
 //========================================================   A D C
+/*
+ * 
+ * 
+                       @    @@@@@@   @@@@@
+                      @ @   @     @ @     @
+                     @   @  @     @ @
+                    @     @ @     @ @
+                    @@@@@@@ @     @ @
+                    @     @ @     @ @     @
+                    @     @ @@@@@@   @@@@@
+
+ * 
+ */
 #include "esp_adc_cal.h"
 #include "driver/adc.h"
 
@@ -398,7 +411,7 @@ public:
         return E_OK;
     }
 
-    float getValue()
+    int getValue()
     {
         if ( _unit==ADC1 ) {
             uint32_t voltage= adc1_get_raw((adc1_channel_t)_channel);
@@ -410,7 +423,7 @@ public:
             if ( r==ESP_OK ) {
                 return voltage;
             } else {
-                return -1.0;
+                return -1;
             }
         } else {
             return -2;

@@ -142,7 +142,7 @@ public:
     static ADC& create(PhysicalPin pin);
     
     virtual Erc init()=0;
-    virtual float getValue()=0;
+    virtual int getValue()=0;
 };
 
 class Connector

@@ -54,25 +54,50 @@ void Controller::start()
         return E_OK;
     },1000);
 }
+Message _toMqttMsg(100);
+Str _topic(50);
+Str _message(10);
+void mqttPublish(const char* topic,int value)
+{
+    _toMqttMsg.clear();
+    _topic.clear();
+    _message.clear();
+
+    _topic = topic;
+    _message.append(value);
+
+    _toMqttMsg.put(H("topic"),_topic);
+    _toMqttMsg.put(H("message"),_message);
+    eb.publish("mqtt/publish",_toMqttMsg);
+
+}
 
 void Controller::run()
 {
+    static uint32_t _oldPotRight;
     PT_BEGIN();
     while(true) {
         PT_WAIT_SIGNAL(10);
         _potLeft = _potLeft + ( _pot_left.getValue() - _potLeft ) / 2;
         _potRight = _potRight + ( _pot_right.getValue() - _potRight )/2;
- /*       INFO(" %d:%d %d:%d %d:%d ",
-             _potLeft,
-             _potRight,
-             _leftSwitch.read(),
-             _rightSwitch.read(),
-             _led_left.isOn(),
-             _led_right.isOn());
-        if ( _potLeft > 512 ) _led_left.on();
-        if ( _potRight > 512 ) _led_right.on();
-        if ( _potLeft <= 512 ) _led_left.off();
-        if ( _potRight <= 512 ) _led_right.off();*/
+        if ( _oldPotRight != _potRight ) {
+            _oldPotRight = _potRight;
+            int angle = _potRight -512;
+            angle = ( angle * 180 )/1024;
+            mqttPublish("dst/drive/servo/angleTarget",angle);
+        }
+
+        /*       INFO(" %d:%d %d:%d %d:%d ",
+                    _potLeft,
+                    _potRight,
+                    _leftSwitch.read(),
+                    _rightSwitch.read(),
+                    _led_left.isOn(),
+                    _led_right.isOn());
+               if ( _potLeft > 512 ) _led_left.on();
+               if ( _potRight > 512 ) _led_right.on();
+               if ( _potLeft <= 512 ) _led_left.off();
+               if ( _potRight <= 512 ) _led_right.off();*/
 
     }
     PT_END();

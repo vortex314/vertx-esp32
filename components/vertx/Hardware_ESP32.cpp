@@ -61,7 +61,7 @@ public:
         }
         io_conf.intr_type = interruptType;
 
-        io_conf.pin_bit_mask = (1 << _gpio);    // bit mask of the pins
+        io_conf.pin_bit_mask = ((uint64_t)1 << _gpio);    // bit mask of the pins
         io_conf.mode = GPIO_MODE_INPUT;         // set as input mode
         io_conf.pull_up_en = (gpio_pullup_t)(_mode&DIN_PULL_UP ?1:0);  // enable pull-up mode
         io_conf.pull_down_en = (gpio_pulldown_t)(_mode&DIN_PULL_DOWN ?1:0);

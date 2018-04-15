@@ -52,7 +52,7 @@ public:
                     if ( pvcr->signal() ) {
                         pvcr->run();
                         pvcr->clearSignal();
-                    } 
+                    }
                 }
             }
             taskYIELD();
@@ -70,22 +70,66 @@ Telnet telnet("telnet");
 Mdns mdns("mdns");
 Mqtt mqtt("mqtt");
 PropertyVerticle prop("property");
-Connector uext2(2);
-MotorServo motorServo("servo",uext2);
+/*Connector uext2(2);
+MotorServo motorServo("servo",uext2);*/
 /*Connector uext1(1);
 Compass compass("compass",uext1);
 Connector uext3(3);
 UltraSonic us("ultraSonic",uext3);*/
 #include <Controller.h>
 //Controller controller("controller");
+class Tacho : public VerticleCoRoutine
+{
+    DigitalIn& _pin;
+    uint64_t _lastMeasurement;
+    uint32_t _delta;
+    uint32_t _rpm;
+public :
+    Tacho() : VerticleCoRoutine("tacho"), _pin(DigitalIn::create(35))
+    {
+    }
+    void calcDelta(uint64_t t)
+    {
+        _delta = t-_lastMeasurement;
+        _lastMeasurement = t;
+        _rpm = ( 1000000*60  / _delta );
+    }
+    static void onRaise(void *p)
+    {
+        uint64_t t =  Sys::micros();
+        Tacho* tacho=(Tacho*)p;
+        tacho->calcDelta(t);
+    }
+    void start()
+    {
+        _pin.onChange(DigitalIn::DIN_RAISE,onRaise,this);
+        _pin.init();
+        new PropertyFunction<int32_t>("tacho/pin", [this]() {
+            return _pin.read();
+        },1000);
+        new PropertyReference<uint32_t>("tacho/rpm",_rpm,1000);
 
+        VerticleCoRoutine::start();
+    }
+    void run()
+    {
+        PT_BEGIN();
+        while(true) {
+            PT_WAIT_SIGNAL(100);
+            INFO(" tacho pin : %d rpm : %d ",_pin.read(),_rpm);
+            if ( (Sys::micros() - _lastMeasurement) > 1000000 ) _rpm=0;
+        }
+        PT_END();
+    }
+};
 
+//Tacho tacho;
 
 extern "C" void app_main()
 {
- //       config.clear();
+//       config.clear();
     nvs_flash_init();
-    
+
     config.load();
     config.setNameSpace("system");
 
@@ -96,7 +140,7 @@ extern "C" void app_main()
     config.get("host",hn,hn.c_str());
     INFO(" host : %s",hn.c_str());
     Sys::hostname(hn.c_str());
-    
+
     eb.on("mqtt/connected", [](Message& evt) {
         led.setInterval(1000);
     });

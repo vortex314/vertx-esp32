@@ -77,11 +77,11 @@ void PropertyVerticle::run()
                 if ( (_currentProp->_timeout < Sys::millis()) || _currentProp->hasChanged() ) {
                     sendProp(_currentProp);
 //                   _currentProp=Property::first();
-                    PT_WAIT(10);
+                    PT_WAIT(1);
                 }
                 _currentProp=_currentProp->next();
             }
-            PT_WAIT(10);
+            PT_WAIT(1);
         };
 
     }

@@ -16,6 +16,7 @@
 class Wifi : public VerticleCoRoutine {
   Str _ssid;
   Str _pswd;
+
   static Wifi* _me;
 
  public:
@@ -24,6 +25,10 @@ class Wifi : public VerticleCoRoutine {
   void run();
   Erc configure(const char* ssid, const char* pswd);
   static esp_err_t event_handler(void*, system_event_t*);
+  void scanDoneHandler();
+  void connectToAP(const char* AP);
+  void startScan();
+  const char* getSSID();
 };
 
 #endif

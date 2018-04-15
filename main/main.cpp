@@ -80,12 +80,17 @@ UltraSonic us("ultraSonic",uext3);*/
 //Controller controller("controller");
 class Tacho : public VerticleCoRoutine
 {
-    DigitalIn& _pin;
+    DigitalIn& _pinTacho;
+    DigitalOut& _pinPwmLeft;
+    DigitalOut& _pinPwmRight;
     uint64_t _lastMeasurement;
     uint32_t _delta;
     uint32_t _rpm;
 public :
-    Tacho() : VerticleCoRoutine("tacho"), _pin(DigitalIn::create(35))
+    Tacho() : VerticleCoRoutine("tacho"),
+        _pinTacho(DigitalIn::create(35)),
+        _pinPwmLeft(DigitalOut::create(27)),
+        _pinPwmRight(DigitalOut::create(26))
     {
     }
     void calcDelta(uint64_t t)
@@ -102,10 +107,14 @@ public :
     }
     void start()
     {
-        _pin.onChange(DigitalIn::DIN_RAISE,onRaise,this);
-        _pin.init();
+        _pinTacho.onChange(DigitalIn::DIN_RAISE,onRaise,this);
+        _pinTacho.init();
+        _pinPwmLeft.init();
+        _pinPwmRight.init();
+        _pinPwmLeft.write(1);
+        _pinPwmRight.write(0);
         new PropertyFunction<int32_t>("tacho/pin", [this]() {
-            return _pin.read();
+            return _pinTacho.read();
         },1000);
         new PropertyReference<uint32_t>("tacho/rpm",_rpm,1000);
 
@@ -116,7 +125,7 @@ public :
         PT_BEGIN();
         while(true) {
             PT_WAIT_SIGNAL(100);
-            INFO(" tacho pin : %d rpm : %d ",_pin.read(),_rpm);
+            INFO(" tacho pin : %d rpm : %d ",_pinTacho.read(),_rpm);
             if ( (Sys::micros() - _lastMeasurement) > 1000000 ) _rpm=0;
         }
         PT_END();
@@ -124,6 +133,9 @@ public :
 };
 
 //Tacho tacho;
+
+#include <Pwm.h>
+Pwm pwm("pwm",26,27,25,36);
 
 extern "C" void app_main()
 {

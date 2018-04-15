@@ -16,6 +16,7 @@
 class Wifi : public VerticleCoRoutine {
   Str _ssid;
   Str _pswd;
+  Str _prefix;
 
   static Wifi* _me;
 

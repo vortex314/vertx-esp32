@@ -843,6 +843,8 @@
   </Reconciliation>
   <VirtualDirectory Name="components">
     <VirtualDirectory Name="Peripheral">
+      <File Name="components/Peripheral/Pwm.cpp"/>
+      <File Name="components/Peripheral/Pwm.h"/>
       <File Name="components/Peripheral/Controller.cpp"/>
       <File Name="components/Peripheral/Controller.h"/>
       <File Name="components/Peripheral/Pot.cpp"/>

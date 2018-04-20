@@ -215,7 +215,7 @@ void Mqtt::run()
             _busyTxd=false;
         } else { // timeout
             if ( _wifiConnected && !_mqttConnected) {
-                esp_mqtt_start(_host.c_str(), _port, _clientId.c_str(), _user.c_str(),
+                esp_mqtt_start(_host.c_str(), "1883", _clientId.c_str(), _user.c_str(),
                                _password.c_str());
             }
         }

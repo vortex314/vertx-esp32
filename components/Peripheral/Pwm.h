@@ -23,7 +23,7 @@ class Pwm : public VerticleCoRoutine
   DigitalIn& _pinOverCurrent; 
   mcpwm_unit_t _mcpwm_num;
   mcpwm_timer_t _timer_num;
-  float _duty_cycle;
+  double _duty_cycle;
     
 public:
     Pwm(const char* name,uint32_t pinPwmLeft,uint32_t pinPwmRight,uint32_t pinEnable,uint32_t pinOverCurrent);

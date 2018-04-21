@@ -90,7 +90,7 @@ void Mqtt::onMessageReceived(const char *topic, uint8_t *payload,
     uint32_t offsetSlash[5];
     _messageRxd.clear();
     _messageRxd.write(payload,0,size);
-    INFO("PUB RXD : %s = %s ",topic,_messageRxd.c_str());
+ //   INFO("PUB RXD : %s = %s ",topic,_messageRxd.c_str());
 
     const char* first=topic;
     const char* ptr = first;
@@ -144,7 +144,7 @@ void Mqtt::start()
     _willMessage= "false";
     _keepAlive = 5;
     //   esp_mqtt_lwt(_willTopic.c_str(), _willMessage.c_str(), 1, false); // implemented in 0.5 however breaks
-    
+//    INFO(" esp_mqtt_init(onStatusChange, onMessage, 256, 2000)  ");
     esp_mqtt_init(onStatusChange, onMessage, 256, 2000);
     eb.on("wifi/connected",[this](Message& msg) {
         _wifiConnected=true;
@@ -185,6 +185,8 @@ void Mqtt::publish(const char *topic, uint8_t *payload, size_t len, int qos,
                    bool retained)
 {
     if ( ! _mqttConnected ) return;
+ //       INFO("esp_mqtt_publish(topic:%s, payload, len, qos:%d, retained:%d) ",topic,qos,retained);
+
     if (!esp_mqtt_publish(topic, payload, len, qos, retained)) {
         ERROR(" mqtt publish failed : %s size:%d ", topic, len);
     } else {
@@ -203,18 +205,21 @@ void Mqtt::run()
         if ( hasSignal(SIG_WIFI_CONNECTED )) {
 
         } else if ( hasSignal(SIG_WIFI_DISCONNECTED )) {
+ //            INFO("esp_mqtt_stop(); ");
             esp_mqtt_stop();
             onDisconnected();
         }  else if ( hasSignal(SIG_MQTT_PUBLISH )) {
-            publish(_topicTxd.c_str(), _messageTxd.data(), _messageTxd.length(), 1, false);
+            publish(_topicTxd.c_str(), _messageTxd.data(), _messageTxd.length(), 0, false);
             _busyTxd=false;
         } else if ( hasSignal(SIG_MQTT_SUBSCRIBE )) {
+ //            INFO("esp_mqtt_subscribe(_topicTxd.c_str(), 0) ");
             if (!esp_mqtt_subscribe(_topicTxd.c_str(), 0) ) {
                 ERROR(" mqtt subscribe failed");
             }
             _busyTxd=false;
         } else { // timeout
             if ( _wifiConnected && !_mqttConnected) {
+ //                INFO("esp_mqtt_start(_host.c_str(), 1883, _clientId.c_str(), _user.c_str(),_password.c_str())");
                 esp_mqtt_start(_host.c_str(), "1883", _clientId.c_str(), _user.c_str(),
                                _password.c_str());
             }

@@ -32,7 +32,9 @@ void PropertyVerticle::start()
         if ( msg.get(H("key"),key) && msg.get(H("value"),_message)) {
             Property* p = Property::findByUid(key);
             if ( p ) {
+                _message.offset(0);
                 p->fromJson(_message);
+                INFO(" Propery set  %s=%s",UID.label(key),_message.c_str());
             } else {
                 ERROR(" didn't find property ")
             }

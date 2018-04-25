@@ -135,7 +135,7 @@ public :
 //Tacho tacho;
 
 #include <Pwm.h>
-Pwm pwm("pwm",26,27,25,36);
+Pwm pwm("pwm",26,27,25,36,35);
 
 extern "C" void app_main()
 {

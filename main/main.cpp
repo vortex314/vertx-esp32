@@ -82,19 +82,19 @@ PropertyVerticle prop("property");
 // prototype board based on kicad
 // GPIO36 : L_IS
 // GPIO39 : R_IS
-// GPIO32 : L_EN
-// GPIO33 : R_EN
-// GPIO25 : L_PWM
-// GPIO26 : R_PWM
+// GPIO32 : L_PWM was L_EN
+// GPIO33 : R_PWM was R_EN
+// GPIO25 : L_EN was L_PWM
+// GPIO26 : R_EN was R_PWM
 // GPIO34 : channel A of rotary sensor
 // GPIO35 : channel B of rotary sensor
-MotorSpeed motorSpeed("speed",36,39,32,33,25,26,34,35);
+//MotorSpeed motorSpeed("speed",36,39,25,26,32,33,34,35);
 /*Connector uext1(1);
 Compass compass("compass",uext1);
 Connector uext3(3);
 UltraSonic us("ultraSonic",uext3);*/
 #include <Controller.h>
-//Controller controller("controller");
+Controller controller("controller");
 class Tacho : public VerticleCoRoutine
 {
     DigitalIn& _pinTacho;

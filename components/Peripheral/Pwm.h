@@ -36,9 +36,9 @@ class Pwm : public VerticleCoRoutine
     uint32_t _prevCapture;
     uint32_t _delta;
     uint32_t _captureInterval;
-    float _KP=0.1;
-    float _KI=0.01;
-    float _KD=0.01;
+    float _KP=0.05;
+    float _KI=0.05;
+    float _KD=-0.01;
     float _bias=0;
     float _error=0;
     float _errorPrior=0;

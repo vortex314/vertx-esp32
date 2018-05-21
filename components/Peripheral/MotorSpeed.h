@@ -1,5 +1,5 @@
-#ifndef MOTORSERVO_H
-#define MOTORSERVO_H
+#ifndef MOTORSPEED_H
+#define MOTORSPEED_H
 
 #include <vertx.h>
 #include <Hardware.h>
@@ -10,7 +10,7 @@
 
 #define MAX_SAMPLES 4
 
-class MotorServo : VerticleCoRoutine
+class MotorSpeed : VerticleCoRoutine
 {
 
 // D34 : L_IS
@@ -21,14 +21,17 @@ class MotorServo : VerticleCoRoutine
 // D32 : ADC POT
     ADC& _adcLeftIS;
     ADC& _adcRightIS;
-    DigitalOut& _pinEnable;
+    DigitalOut& _pinLeftEnable;
+    DigitalOut& _pinRightEnable;
     uint32_t _pinPwmLeft;
     uint32_t _pinPwmRight;
-    ADC& _adcPot;
+    uint32_t _pinTachoA;
+    uint32_t _pinTachoB; 
     mcpwm_unit_t _mcpwm_num;
     mcpwm_timer_t _timer_num;
-    float _angleCurrent=0.0;
-    float _angleTarget=20;
+    float _rpmMeasured;
+    float _rpmTarget;
+    float _rpmFiltered;
     float _KP=15;
     float _KI=0.005;
     float _KD=0;
@@ -39,20 +42,22 @@ class MotorServo : VerticleCoRoutine
     float _integral=0;
     float _derivative=0;
     float _output=0;
-    float _angleSamples[MAX_SAMPLES];
+    float _samples[MAX_SAMPLES];
     uint32_t _indexSample=0;
     float _angleFiltered;
     float _currentLeft,_currentRight;
 public:
-    MotorServo(const char* name,Connector& connector);
-    MotorServo(const char* name,
+    MotorSpeed(const char* name,Connector& connector);
+    MotorSpeed(const char* name,
                uint32_t pinLeftIS,
                uint32_t pinrightIS,
-               uint32_t pinEnable,
+               uint32_t pinLeftEnable,
+               uint32_t pinRightEnable,
                uint32_t pinLeftPwm,
                uint32_t pinRightPwm,
-               uint32_t pinPot);
-    ~MotorServo();
+               uint32_t pinTachoA,
+               uint32_t pinTachoB );
+    ~MotorSpeed();
     void start();
     void run();
     void calcTarget(float);
@@ -60,8 +65,8 @@ public:
     void left(float);
     void right(float);
     void setOutput(float output);
-    float filterAngle(float inp);
+    float filter(float inp);
     void round(float& f,float resol);
 };
 
-#endif // MOTORSERVO_H
+#endif // MOTORSPEED_H

@@ -20,6 +20,7 @@
 #include <Compass.h>
 #include <UltraSonic.h>
 #include <MotorServo.h>
+#include <MotorSpeed.h>
 
 // esp_err_t event_handler(void *ctx, system_event_t *event) { return ESP_OK; }
 
@@ -70,8 +71,24 @@ Telnet telnet("telnet");
 Mdns mdns("mdns");
 Mqtt mqtt("mqtt");
 PropertyVerticle prop("property");
-/*Connector uext2(2);
-MotorServo motorServo("servo",uext2);*/
+// Connector uext2(2);
+// D34 : L_IS
+// D35 : R_IS
+// D25 : ENABLE
+// D26 : L_PWM
+// D27 : R_PWM
+// D32 : ADC POT
+// MotorServo motorServo("servo",34,35,25,26,27,32);
+// prototype board based on kicad
+// GPIO36 : L_IS
+// GPIO39 : R_IS
+// GPIO32 : L_EN
+// GPIO33 : R_EN
+// GPIO25 : L_PWM
+// GPIO26 : R_PWM
+// GPIO34 : channel A of rotary sensor
+// GPIO35 : channel B of rotary sensor
+MotorSpeed motorSpeed("speed",36,39,32,33,25,26,34,35);
 /*Connector uext1(1);
 Compass compass("compass",uext1);
 Connector uext3(3);
@@ -135,7 +152,13 @@ public :
 //Tacho tacho;
 
 #include <Pwm.h>
-Pwm pwm("pwm",26,27,25,36,35);
+
+// D34 : L_IS
+// D35 : R_IS
+// D25 : ENABLE
+// D26 : L_PWM
+// D27 : R_PWM
+//Pwm pwm("pwm",26,27,25,36,35);
 
 extern "C" void app_main()
 {

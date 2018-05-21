@@ -51,6 +51,7 @@ void Pwm::start()
     mcpwm_isr_register(MCPWM_UNIT_0, isrHandler, this, ESP_INTR_FLAG_IRAM, NULL);  //Set ISR Handler
     new PropertyReference<float> ("drive/rpmTarget",_rpmTarget,1000);
     new PropertyReference<float> ("drive/rpmMeasured",_rpmMeasured,1000);
+    new PropertyReference<float> ("drive/dutyCycle",_output,1000);
     new PropertyReference<uint32_t> ("drive/delta",_delta,1000);
     new PropertyReference<float> ("drive/KP",_KP,1000);
     new PropertyReference<float> ("drive/KI",_KI,1000);
@@ -93,7 +94,7 @@ float Pwm::PID(float err)
     _integral = _integral + (err*_iteration_time);
     _derivative = (err - _errorPrior)/_iteration_time;
     _output = _KP*err + _KI*_integral + _KD*_derivative +_bias;
-    INFO(" error : %f => %f P=%f : I=%f : D=%f ",err,_output,_KP*err , _KI*_integral , _KD*_derivative);
+//    INFO(" error : %f => %f P=%f : I=%f : D=%f ",err,_output,_KP*err, _KI*_integral, _KD*_derivative);
     _errorPrior = err;
     return _output;
 }
@@ -107,11 +108,9 @@ void IRAM_ATTR Pwm::isrHandler(void* pv)
     if (mcpwm_intr_status & CAP0_INT_EN) { //Check for interrupt on rising edge on CAP0 signa
         pwm->_prevCapture = pwm->_capture;
         uint32_t capt = mcpwm_capture_signal_get_value(MCPWM_UNIT_0, MCPWM_SELECT_CAP0); //get capture signal counter value
-        if ( (capt-pwm->_prevCapture) > 10000 ) {
-            pwm->_capture = capt;
-            pwm->_delta = pwm->_capture - pwm->_prevCapture;
-
-        }
+        pwm->_capture = capt;
+        pwm->_delta = pwm->_capture - pwm->_prevCapture;
+        pwm->signal(2);
     }
 
     MCPWM[MCPWM_UNIT_0]->int_clr.val = mcpwm_intr_status;
@@ -143,37 +142,22 @@ void Pwm::run()
                INFO(" duty cycle : %f ",dutyCycle);
                right(dutyCycle);
         //        right(PID(_error));*/
-        PT_WAIT_SIGNAL(1);
-        if ( lastDelta != _delta ) {
+        PT_WAIT_SIGNAL(1000);
+        if (hasSignal(2)) {
             _rpmMeasured =  80000000.0*60.0;
             _rpmMeasured /= _delta;
             _iteration_time =  60.0/_rpmMeasured ;
-            INFO("%u clicks, %f rpm, %f sec %f error %f : P=%f I=%f ",
-            _delta,
-            _rpmMeasured,
-            _iteration_time,
-            _error,
-            _output,
-            _error*_KP,
-            _integral*_KI);
-
-        };
+            clearSignal();
+        } else {
+            _rpmMeasured =0;
+            _iteration_time=0.1;
+        }
+        
         _error = _rpmTarget-_rpmMeasured;
         _output = PID(_error);
         right(_output);
         lastDelta=_delta;
-//       right(15.0);
-        /*       INFO(" capture : %u rpmTarget %u rpmMeasured %u error : %f output : %f I:%f D:%f  ",
-                    _capture,
-                    _rpmTarget,
-                    _rpmMeasured,
-                    _error,
-                    _output,
-                    _integral,
-                    _derivative);*/
 
-        /*        if ( _rpmMeasured == _rpmLastMeasured) _rpmMeasured=0;
-                _rpmLastMeasured = _rpmMeasured;*/
     };
     PT_END();
 }

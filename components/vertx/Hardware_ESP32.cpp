@@ -135,7 +135,7 @@ public:
         // set as output mode
         io_conf.mode = GPIO_MODE_OUTPUT;
         // bit mask of the pins that you want to set,e.g.GPIO18/19
-        io_conf.pin_bit_mask = 1 << _gpio;
+        io_conf.pin_bit_mask = (uint64_t)1 << _gpio;
         // disable pull-down mode
         io_conf.pull_down_en = (gpio_pulldown_t)0;
         // disable pull-up mode
@@ -362,8 +362,10 @@ struct  AdcEntry {
     AdcUnit unit;
 
 } AdcTable[]= {
+    {32,ADC1_CHANNEL_4,ADC1},
     {33,ADC1_CHANNEL_5,ADC1},
     {34,ADC1_CHANNEL_6,ADC1},
+    {35,ADC1_CHANNEL_7,ADC1},
     {13,ADC2_GPIO13_CHANNEL,ADC2},
     {15,ADC2_GPIO15_CHANNEL,ADC2},
     {36,ADC1_GPIO36_CHANNEL,ADC1},

@@ -11,21 +11,50 @@ public:
     uint64_t _timeout;
     uid_t _uid;
     uint32_t _interval;
-    Property(const char* name,uint32_t interval) : _interval(interval) {
+    bool _trackChanges=true;
+    Property(const char* name,int interval) 
+    {
+        if ( interval < 0 ) {
+            _trackChanges=false;
+            _interval=- interval;
+        } else {
+            _trackChanges=true;
+            _interval = interval;
+        }
         _uid = UID.add(name);
-        _timeout = Sys::millis()+interval;
+        _timeout = Sys::millis()+_interval;
         add(this);
     }
-    virtual void toJson(Str&) { ERROR("");};
-    virtual void fromJson(Str&) {ERROR("");};
+    virtual void toJson(Str&)
+    {
+        ERROR("");
+    };
+    virtual void fromJson(Str&)
+    {
+        ERROR("");
+    };
     static Property* findByUid(uid_t uid);
-    void updated(){
+    void updated()
+    {
         _timeout=Sys::millis()-1;
     }
-    virtual bool hasChanged() {
+    bool trackChanges()
+    {
+        return _trackChanges;
+    }
+    void trackChanges(bool t)
+    {
+        _trackChanges=t;
+    }
+    virtual bool hasChanged()
+    {
         return false;
     }
-    uid_t uid() { return _uid;};
+
+    uid_t uid()
+    {
+        return _uid;
+    };
 
 };
 
@@ -36,19 +65,25 @@ public:
     T& _var;
     T _oldVar;
 
-    PropertyReference(const char* name,T& var,uint32_t interval) : Property(name,interval),_var(var) {
+    PropertyReference(const char* name,T& var,uint32_t interval) : Property(name,interval),_var(var)
+    {
     }
 
-    ~PropertyReference() {
+    ~PropertyReference()
+    {
     }
-    void toJson(Str& msg) {
+    void toJson(Str& msg)
+    {
         msg.append(_var);
         _oldVar=_var;
     }
-    void fromJson(Str& msg){
+    void fromJson(Str& msg)
+    {
         msg.parse(_var);
     }
-    bool hasChanged() {
+    bool hasChanged()
+    {
+        if ( !_trackChanges ) return false;
         if ( _var == _oldVar ) return false;
         return true;
     }
@@ -61,16 +96,21 @@ class PropertyFunction : public Property
     T _oldVar;
 public:
     std::function<T()> _fRead;
-    PropertyFunction(const char* name,std::function<T ()> fRead,uint32_t interval) : Property(name,interval),_fRead(fRead) {
+    PropertyFunction(const char* name,std::function<T ()> fRead,uint32_t interval) : Property(name,interval),_fRead(fRead)
+    {
     }
- 
-    ~PropertyFunction() {
+
+    ~PropertyFunction()
+    {
     }
-    void toJson(Str& msg) {
+    void toJson(Str& msg)
+    {
         msg.append(_fRead());
         _oldVar = _fRead();
     }
-    bool hasChanged(){
+    bool hasChanged()
+    {
+        if ( !_trackChanges ) return false;
         if ( _fRead()==_oldVar) return false;
         return true;
     }
@@ -84,24 +124,30 @@ public:
     std::function<T()> _fRead;
     std::function<Erc(T&v)> _fWrite;
 
-    
-    PropertyWriteFunction(const char* name,std::function<T ()> fRead,std::function<Erc (T& input)> fWrite,uint32_t interval) 
-        : Property(name,interval),_fRead(fRead),_fWrite(fWrite) {
+
+    PropertyWriteFunction(const char* name,std::function<T ()> fRead,std::function<Erc (T& input)> fWrite,uint32_t interval)
+        : Property(name,interval),_fRead(fRead),_fWrite(fWrite)
+    {
     }
 
-    ~PropertyWriteFunction() {
+    ~PropertyWriteFunction()
+    {
     }
-    void toJson(Str& msg) {
+    void toJson(Str& msg)
+    {
         msg.append(_fRead());
         _oldVar = _fRead();
     }
-    void fromJson(Str& msg){
+    void fromJson(Str& msg)
+    {
         T var;
         msg.parse(var);
         _fWrite(var);
     }
-    bool hasChanged(){
-        if ( _fRead()==_oldVar) return false;
+    bool hasChanged()
+    {
+         if ( !_trackChanges ) return false;
+       if ( _fRead()==_oldVar) return false;
         return true;
     }
 

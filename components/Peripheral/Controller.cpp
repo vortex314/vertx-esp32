@@ -8,7 +8,10 @@ Controller::Controller(const char* name)  : VerticleCoRoutine(name),
     _pot_right(39),
     _leftSwitch(DigitalIn::create(13)),
     _rightSwitch(DigitalIn::create(16))
+    
 {
+    _potLeftFilter=new AverageFilter<uint32_t>();
+    _potRightFilter=new AverageFilter<uint32_t>();
 }
 
 Controller::~Controller()
@@ -79,6 +82,8 @@ void Controller::run()
         PT_WAIT_SIGNAL(100);
         _potLeft = _potLeft + ( _pot_left.getValue() - _potLeft ) / 2;
         _potRight = _potRight + ( _pot_right.getValue() - _potRight )/2;
+        _potLeft =  _potLeftFilter->filter(_potLeft);
+        _potRight = _potRightFilter->filter(_potRight);
 
     }
     PT_END();

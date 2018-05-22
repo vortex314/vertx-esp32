@@ -88,13 +88,14 @@ PropertyVerticle prop("property");
 // GPIO26 : R_EN was R_PWM
 // GPIO34 : channel A of rotary sensor
 // GPIO35 : channel B of rotary sensor
-//MotorSpeed motorSpeed("speed",36,39,25,26,32,33,34,35);
 /*Connector uext1(1);
 Compass compass("compass",uext1);
 Connector uext3(3);
 UltraSonic us("ultraSonic",uext3);*/
-#include <Controller.h>
-Controller controller("controller");
+//#include <Controller.h>
+//Controller controller("controller");
+MotorSpeed motorSpeed("speed",36,39,25,26,32,33,34,35);
+
 class Tacho : public VerticleCoRoutine
 {
     DigitalIn& _pinTacho;

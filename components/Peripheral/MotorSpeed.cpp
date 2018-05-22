@@ -19,6 +19,9 @@
  *
  *
  * */
+ 
+ 
+ 
 
 static mcpwm_dev_t *MCPWM[2] = {&MCPWM0, &MCPWM1};
 
@@ -41,6 +44,7 @@ MotorSpeed::MotorSpeed(const char* name,
     _dInTachoB(DigitalIn::create(pinTachoB))
 {
     _isrCounter=0;
+    _rpmMeasuredFilter = new AverageFilter<float>();
 }
 
 MotorSpeed::~MotorSpeed()
@@ -112,11 +116,11 @@ void MotorSpeed::start()
         WARN("mcpwm_capture_enable() : %d",rc);
     }
     new PropertyReference<float> ("motor/rpmTarget",_rpmTarget,1000);
-    new PropertyReference<float> ("motor/rpmMeasured",_rpmMeasured,1000);
-    new PropertyReference<float> ("motor/rpmFiltered",_rpmFiltered,1000);
-    new PropertyReference<float> ("motor/currentLeft",_currentLeft,1000);
-    new PropertyReference<float> ("motor/currentRight",_currentRight,1000);
-    new PropertyReference<uint32_t> ("motor/delta",_delta,1000);
+    new PropertyReference<float> ("motor/rpmMeasured",_rpmMeasured,-1000);
+    new PropertyReference<float> ("motor/rpmFiltered",_rpmFiltered,-1000);
+    new PropertyReference<float> ("motor/currentLeft",_currentLeft,-1000);
+    new PropertyReference<float> ("motor/currentRight",_currentRight,-1000);
+    new PropertyReference<uint32_t> ("motor/delta",_delta,-1000);
     new PropertyReference<int> ("motor/direction",_direction,1000);
 
 
@@ -221,6 +225,7 @@ void MotorSpeed::run()
             _rpmMeasured=0;
         }
         _rpmMeasured= _direction*_rpmMeasured;
+        _rpmMeasured = _rpmMeasuredFilter->filter(_rpmMeasured);
         _rpmFiltered =  filter(_rpmMeasured);
 
         _currentLeft = (_adcLeftIS.getValue()*3.9 / 1024.0)*0.85;
@@ -237,19 +242,20 @@ void MotorSpeed::run()
         }
         setOutput(_output);
 
-/*        INFO(" %d %f/%f rpm, %d ,%f/%f A,  %f sec, %f error, %f == P=%f + I=%f + D=%f",
-             _direction,
-             _rpmMeasured,
-             _rpmTarget,
-             _isrCounter,
-             _currentLeft,
-             _currentRight,
-             _iteration_time,
-             _error,
-             _output,
-             _error*_KP,
-             _integral*_KI,
-             _derivative*_KD);*/
+        /*        INFO(" %d %f/%f rpm, %d ,%f/%f A,  %f sec, %f error, %f == P=%f + I=%f + D=%f",
+                     _direction,
+                     _rpmMeasured,
+                     _rpmTarget,
+                     _isrCounter,
+                     _currentLeft,
+                     _currentRight,
+                     _iteration_time,
+                     _error,
+                     _output,
+                     _error*_KP,
+                     _integral*_KI,
+                     _derivative*_KD);*/
     }
     PT_END();
 }
+

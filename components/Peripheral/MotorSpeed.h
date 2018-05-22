@@ -4,10 +4,14 @@
 #include <vertx.h>
 #include <Hardware.h>
 
+#include <MedianFilter.hpp>
+
 #include "driver/mcpwm.h"
 #include "driver/pcnt.h"
 #include "soc/mcpwm_reg.h"
 #include "soc/mcpwm_struct.h"
+
+
 
 #define MAX_SAMPLES 4
 #define CAP0_INT_EN BIT(27)  //Capture 0 interrupt bit
@@ -65,6 +69,7 @@ class MotorSpeed : VerticleCoRoutine
     uint32_t _indexSample=0;
     float _angleFiltered;
     float _currentLeft,_currentRight;
+    AverageFilter<float>* _rpmMeasuredFilter;
 public:
     MotorSpeed(const char* name,Connector& connector);
     MotorSpeed(const char* name,

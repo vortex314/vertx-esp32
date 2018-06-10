@@ -18,7 +18,7 @@ bool alive=true;
 void PropertyVerticle::start()
 {
     new PropertyReference<bool>("system/alive",alive,-1000);
-    new PropertyFunction<uint32_t>("system/upTime",Sys::sec,-1000);
+    new PropertyFunction<uint32_t>("system/upTime",Sys::sec,-500);
     new PropertyFunction<uint32_t>("system/heap",Sys::getFreeHeap,-5000);
     new PropertyFunction<uint64_t>("system/serialId",Sys::getSerialId,5000);
     eb.on("mqtt/connected",[this](Message& msg) {

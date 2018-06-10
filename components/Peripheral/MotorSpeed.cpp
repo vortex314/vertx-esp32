@@ -19,9 +19,9 @@
  *
  *
  * */
- 
- 
- 
+
+
+
 
 static mcpwm_dev_t *MCPWM[2] = {&MCPWM0, &MCPWM1};
 
@@ -102,7 +102,7 @@ void MotorSpeed::start()
     _dInTachoB.onChange(DigitalIn::DIN_RAISE,onRaise,this);
     INFO("Configuring Initial Parameters of mcpwm... on %d , %d ",_pinPwmLeft,_pinPwmRight);
     mcpwm_config_t pwm_config;
-    pwm_config.frequency = 2000;    //frequency = 500Hz,
+    pwm_config.frequency = 10000;    //frequency = 500Hz,
     pwm_config.cmpr_a = 0;    //duty cycle of PWMxA = 0
     pwm_config.cmpr_b = 0;    //duty cycle of PWMxb = 0
     pwm_config.counter_mode = MCPWM_UP_COUNTER;
@@ -165,6 +165,7 @@ float MotorSpeed::PID(float err)
 void MotorSpeed::setOutput(float output)
 {
     static float lastOutput=0;
+    if ( abs(lastOutput-output)< 1) return;
     if (( output < 0 && lastOutput >0 ) || ( output > 0 && lastOutput < 0 )) {
         _pinLeftEnable.write(1);
         _pinRightEnable.write(1);
@@ -211,13 +212,12 @@ void MotorSpeed::round(float& f,float resolution)
 
 void MotorSpeed::run()
 {
-
+    static uint32_t loopCount=0;
     PT_BEGIN();
     _pinLeftEnable.write(1);
     _pinRightEnable.write(1);
     while(true) {
         PT_WAIT_SIGNAL(100);
-        uint32_t sig= signal();
 
         if ( hasSignal( SIG_CAPTURED) ) {
             _rpmMeasured = (80000000.0 / _delta)*0.6;
@@ -236,26 +236,28 @@ void MotorSpeed::run()
 
         _error = _rpmTarget - _rpmMeasured;
         PID(_error);
-        _output *= -1;
+//        _output *= -1;
         if ( _currentLeft > 3.0 || _currentRight > 3.0 ) {
-            _output= 0;
+            // _output= 0;
         }
         setOutput(_output);
 
-        /*        INFO(" %d %f/%f rpm, %d ,%f/%f A,  %f sec, %f error, %f == P=%f + I=%f + D=%f",
-                     _direction,
-                     _rpmMeasured,
-                     _rpmTarget,
-                     _isrCounter,
-                     _currentLeft,
-                     _currentRight,
-                     _iteration_time,
-                     _error,
-                     _output,
-                     _error*_KP,
-                     _integral*_KI,
-                     _derivative*_KD);*/
+        if ( ((loopCount++) % 16)==0) {
+            INFO(" %d %f/%f rpm, %d ,%f/%f A,  %f sec, %f error, %f == P=%f + I=%f + D=%f",
+                 _direction,
+                 _rpmMeasured,
+                 _rpmTarget,
+                 _isrCounter,
+                 _currentLeft,
+                 _currentRight,
+                 _iteration_time,
+                 _error,
+                 _output,
+                 _error*_KP,
+                 _integral*_KI,
+                 _derivative*_KD);
+
+        }
     }
     PT_END();
 }
-

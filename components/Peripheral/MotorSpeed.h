@@ -53,7 +53,7 @@ class MotorSpeed : VerticleCoRoutine
     uint32_t _isrCounter;
     int _direction=1;
     float _rpmMeasured;
-    float _rpmTarget=100;
+    float _rpmTarget=0;
     float _rpmFiltered;
     float _KP=0.08;
     float _KI=0.005;

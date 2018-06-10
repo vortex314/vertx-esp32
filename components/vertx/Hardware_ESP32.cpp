@@ -6,6 +6,7 @@
 #include "driver/uart.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include <CircBuf.h>
 
 static struct ESP32 {
     i2c_port_t _i2c_port;
@@ -318,8 +319,8 @@ I2C& I2C::create(PhysicalPin scl, PhysicalPin sda)
 
 //========================================================   A D C
 /*
- * 
- * 
+ *
+ *
                        @    @@@@@@   @@@@@
                       @ @   @     @ @     @
                      @   @  @     @ @
@@ -328,7 +329,7 @@ I2C& I2C::create(PhysicalPin scl, PhysicalPin sda)
                     @     @ @     @ @     @
                     @     @ @@@@@@   @@@@@
 
- * 
+ *
  */
 #include "esp_adc_cal.h"
 #include "driver/adc.h"
@@ -611,6 +612,12 @@ Spi& Spi::create(PhysicalPin miso, PhysicalPin mosi, PhysicalPin sck,
 
 */
 
+#define RX_BUF_SIZE 1024
+#define TX_BUF_SIZE 1024
+
+#define TAG "uart0"
+#define PATTERN_CHR_NUM 1
+
 class UART_ESP32 : public UART
 {
     FunctionPointer _onRxd;
@@ -618,11 +625,46 @@ class UART_ESP32 : public UART
     void* _onRxdVoid;
     void* _onTxdVoid;
     uint32_t clock;
+    uart_port_t _uartNum;
+    uint32_t _pinTxd;
+    uint32_t _pinRxd;
+    uint32_t _baudrate;
+    QueueHandle_t _queue=0;
+    CircBuf _rxdBuf;
 
 public:
-    UART_ESP32(PhysicalPin txd, PhysicalPin rxd);
+    UART_ESP32(PhysicalPin txd, PhysicalPin rxd) : _pinTxd(txd),_pinRxd(rxd),_rxdBuf(256)
+    {
+        _uartNum=UART_NUM_0;
+        _baudrate=115200;
+        _onTxd=0;
+        _onRxd=0;
+
+    };
     Erc init()
     {
+        uart_config_t uart_config ;
+        uart_config.baud_rate = _baudrate;
+        uart_config.data_bits = UART_DATA_8_BITS;
+        uart_config.parity = UART_PARITY_DISABLE;
+        uart_config.stop_bits = UART_STOP_BITS_1;
+        uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+        uart_config.use_ref_tick=false;
+        uart_config.rx_flow_ctrl_thresh=0;
+
+        uart_param_config(_uartNum, &uart_config);
+
+        if ( _uartNum==UART_NUM_0)  {
+            uart_set_pin(UART_NUM_0, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE); // no CTS,RTS
+        } else {
+            uart_set_pin(_uartNum, _pinTxd, _pinRxd, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE); // no CTS,RTS
+        }
+
+        uart_driver_install(_uartNum, RX_BUF_SIZE, TX_BUF_SIZE, 20, &_queue, 0);
+/*       INFO(" queue %0xX",_queue);
+       uart_enable_pattern_det_intr(_uartNum, '\n', 1, 10000, 10, 10);
+       uart_pattern_queue_reset(_uartNum, 20);*/
+        xTaskCreate(uart_event_task, "uart_event_task", 2048, this, 12, NULL);
         return E_OK;
     };
     Erc deInit()
@@ -631,31 +673,42 @@ public:
     };
     Erc setClock(uint32_t clock)
     {
+        _baudrate=clock;
         return E_OK;
     };
 
     Erc write(const uint8_t* data, uint32_t length)
     {
-        return E_OK;
+        if ( uart_write_bytes(_uartNum,(const char*)data,length)==length)
+            return E_OK;
+        return EIO;
     };
     Erc write(uint8_t b)
     {
+        if ( uart_write_bytes(_uartNum,(const char*)&b,1)==1)
+            return E_OK;
         return E_OK;
     };
     Erc read(Bytes& bytes)
     {
+        while(_rxdBuf.hasData() && bytes.hasSpace(1))
+            bytes.write(_rxdBuf.read());
         return E_OK;
     };
     uint8_t read()
     {
-        return E_OK;
+        return _rxdBuf.read();
     };
-    void onRxd(FunctionPointer, void*)
+    void onRxd(FunctionPointer fr, void* pv)
     {
+        _onRxd=fr;
+        _onRxdVoid = pv;
         return;
     };
-    void onTxd(FunctionPointer, void*)
+    void onTxd(FunctionPointer fw, void* pv)
     {
+        _onTxd=fw;
+        _onTxdVoid = pv;
         return;
     };
     uint32_t hasSpace()
@@ -664,8 +717,96 @@ public:
     };
     uint32_t hasData()
     {
-        return E_OK;
+        return _rxdBuf.hasData();
     };
+    static void uart_event_task(void *pvParameters)
+    {
+        UART_ESP32* uartEsp32=(UART_ESP32*)pvParameters;
+        uartEsp32->event_task();
+    }
+    void event_task()
+    {
+        uart_event_t event;
+        size_t buffered_size;
+        uint8_t* dtmp = (uint8_t*) malloc(RX_BUF_SIZE);
+        INFO(" uart%d task started ",_uartNum);
+        for(;;) {
+            //Waiting for UART event.
+            if(xQueueReceive(_queue, (void * )&event, (portTickType)portMAX_DELAY)) {
+                bzero(dtmp, RX_BUF_SIZE);
+                switch(event.type) {
+                //Event of UART receving data
+                /*We'd better handler data event fast, there would be much more data events than
+                other types of events. If we take too much time on data event, the queue might
+                be full.*/
+                case UART_DATA:
+                    uart_read_bytes(_uartNum, dtmp, event.size, portMAX_DELAY);
+                    for(uint32_t i=0; i<event.size; i++) {
+                        _rxdBuf.write(dtmp[i]);
+//                        uart_write_bytes(_uartNum,".",1);
+                    }
+                    if ( _onRxd ) _onRxd(_onRxdVoid);
+                    break;
+                //Event of HW FIFO overflow detected
+                case UART_FIFO_OVF:
+                    INFO( "hw fifo overflow");
+                    // If fifo overflow happened, you should consider adding flow control for your application.
+                    // The ISR has already reset the rx FIFO,
+                    // As an example, we directly flush the rx buffer here in order to read more data.
+                    uart_flush_input(_uartNum);
+                    xQueueReset(_queue);
+                    break;
+                //Event of UART ring buffer full
+                case UART_BUFFER_FULL:
+                    INFO( "ring buffer full");
+                    // If buffer full happened, you should consider encreasing your buffer size
+                    // As an example, we directly flush the rx buffer here in order to read more data.
+                    uart_flush_input(_uartNum);
+                    xQueueReset(_queue);
+                    break;
+                //Event of UART RX break detected
+                case UART_BREAK:
+                    INFO( "uart rx break");
+                    break;
+                //Event of UART parity check error
+                case UART_PARITY_ERR:
+                    INFO( "uart parity error");
+                    break;
+                //Event of UART frame error
+                case UART_FRAME_ERR:
+                    INFO( "uart frame error");
+                    break;
+                //UART_PATTERN_DET
+                case UART_PATTERN_DET: {
+                    uart_get_buffered_data_len(_uartNum, &buffered_size);
+                    int pos = uart_pattern_pop_pos(_uartNum);
+                    INFO( "[UART PATTERN DETECTED] pos: %d, buffered size: %d", pos, buffered_size);
+                    if (pos == -1) {
+                        // There used to be a UART_PATTERN_DET event, but the pattern position queue is full so that it can not
+                        // record the position. We should set a larger queue size.
+                        // As an example, we directly flush the rx buffer here.
+                        uart_flush_input(_uartNum);
+                    } else {
+                        uart_read_bytes(_uartNum, dtmp, pos, 100 / portTICK_PERIOD_MS);
+                        uint8_t pat[PATTERN_CHR_NUM + 1];
+                        memset(pat, 0, sizeof(pat));
+                        uart_read_bytes(_uartNum, pat, PATTERN_CHR_NUM, 100 / portTICK_PERIOD_MS);
+                        INFO( "read data: %s", dtmp);
+                        INFO( "read pat : %s", pat);
+                    }
+                    break;
+                }
+                //Others
+                default:
+                    INFO( "uart event type: %d", event.type);
+                    break;
+                }
+            }
+        }
+        free(dtmp);
+        dtmp = NULL;
+        vTaskDelete(NULL);
+    }
 };
 
 UART& UART::create(PhysicalPin txd, PhysicalPin rxd)
@@ -789,13 +930,6 @@ void Connector::lockPin(LogicalPin lp)
 /*
 
 
-@     @    @    @@@@@@  @@@@@@@
-@     @   @ @   @     @    @
-@     @  @   @  @     @    @
-@     @ @     @ @@@@@@     @
-@     @ @@@@@@@ @   @      @
-@     @ @     @ @    @     @
- @@@@@  @     @ @     @    @
 
 
   @@@    @@@@@   @@@@@

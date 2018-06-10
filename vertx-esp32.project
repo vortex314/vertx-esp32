@@ -1476,6 +1476,10 @@
       </VirtualDirectory>
     </VirtualDirectory>
     <VirtualDirectory Name="vertx">
+      <File Name="components/vertx/Timer.cpp"/>
+      <File Name="../vertx-esp8266/Sys.cpp"/>
+      <File Name="components/vertx/MqttSerial.cpp"/>
+      <File Name="components/vertx/MqttSerial.h"/>
       <File Name="components/vertx/SpiVerticle.h"/>
       <File Name="components/vertx/Hardware_ESP32.cpp"/>
       <File Name="components/vertx/Wifi.cpp"/>

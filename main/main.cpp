@@ -16,11 +16,12 @@
 #include <Telnet.h>
 #include <Mdns.h>
 #include <Mqtt.h>
+#include <MqttSerial.h>
 #include <Property.h>
 #include <Compass.h>
 #include <UltraSonic.h>
 #include <MotorServo.h>
-#include <MotorSpeed.h>
+
 
 // esp_err_t event_handler(void *ctx, system_event_t *event) { return ESP_OK; }
 
@@ -28,48 +29,22 @@
 #include "driver/spi_master.h"
 #include "esp_system.h"
 
-class CoRoutineTask : public VerticleTask
-{
-
-public:
-    CoRoutineTask(const char *name)
-        : VerticleTask(name, 3000, 1) // prio 1 to be at same level as IDLEtask, that resets watchdog
-    {
-    }
-    void start()
-    {
-        INFO(" %s ",__func__);
-        VerticleTask::start();
-    }
-    void run()
-    {
-        while (true) {
-
-            eb.eventLoop(); // handle incoming messages first
-            for(Verticle* pv = Verticle::first(); pv; pv=pv->next()) {
-                if ( !pv->isTask()) {
-                    VerticleCoRoutine* pvcr = (VerticleCoRoutine*)pv;
-                    if ( Sys::millis() >  pvcr->timeout() ) pvcr->signal(SIGNAL_TIMER); // set timeout if needed
-                    if ( pvcr->signal() ) {
-                        pvcr->run();
-                        pvcr->clearSignal();
-                    }
-                }
-            }
-            taskYIELD();
-        }
-    }
-};
 
 EventBus eb(1024);
 Log logger(256);
-Wifi wifi("wifi");
+
+
 LedBlinker led("led1",DigitalOut::create(2));
-CoRoutineTask coRoutines("CoRout");
 Monitor monitor("monitor");
+#ifdef WIFI
+Wifi wifi("wifi");
 Telnet telnet("telnet");
 Mdns mdns("mdns");
 Mqtt mqtt("mqtt");
+#else
+MqttSerial mqtt("mqttSerial");
+#endif
+CoRoutineTask coRoutines("coRout"); // VerticleTask to handle all VerticleCoRoutine 
 PropertyVerticle prop("property");
 // Connector uext2(2);
 // D34 : L_IS
@@ -94,6 +69,7 @@ Connector uext3(3);
 UltraSonic us("ultraSonic",uext3);*/
 //#include <Controller.h>
 //Controller controller("controller");
+#include <MotorSpeed.h>
 MotorSpeed motorSpeed("speed",36,39,25,26,32,33,34,35);
 
 class Tacho : public VerticleCoRoutine

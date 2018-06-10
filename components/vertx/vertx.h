@@ -115,6 +115,15 @@ public:
     }
 };
 
+class CoRoutineTask : public VerticleTask
+{
+
+public:
+    CoRoutineTask(const char *name);
+    void start();
+    void run();
+};
+
 
 // Declare start of protothread (use at start of Run() implementation).
 #define PT_BEGIN() bool ptYielded = true; switch (_ptLine) { case 0:
@@ -200,5 +209,23 @@ public:
 
 extern EventBus eb;
 
+#define TimerHandler std::function<void ()>
+class Timer
+{
+    uint32_t _interval;
+    uint64_t _expiresOn;
+    bool _repeat;
+    bool _active;
+    TimerHandler _action;
+    
+public:
+    Timer();
+    ~Timer();
+    Timer& atInterval(uint32_t msec);
+    Timer& atExpiry(uint64_t msec);
+    Timer& atDelta(uint32_t msec);
+    Timer& doThis(TimerHandler);
+    void check();
+};
 
 #endif

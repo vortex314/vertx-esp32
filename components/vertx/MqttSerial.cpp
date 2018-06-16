@@ -23,6 +23,7 @@ MqttSerial::MqttSerial(const char *name)
       _messageEb(256),
       _myUptime(40)
 {
+    _mqttConnected=false;
 }
 
 MqttSerial::~MqttSerial()
@@ -36,6 +37,7 @@ void MqttSerial::start()
     _myUptime+="/system/upTime";
 
     eb.on("mqtt/publish",[this](Message& msg) {
+        if ( !_mqttConnected ) return;
         if ( !_busyTxd ) {
             if ( msg.get(H("topic"),_topicTxd) && msg.get(H("message"),_messageTxd)) {
                 _busyTxd=true;
@@ -46,6 +48,7 @@ void MqttSerial::start()
         }
     });
     eb.on("mqtt/subscribe",[this](Message& msg) {
+        if ( !_mqttConnected) return;
         if ( !_busyTxd ) {
             if ( msg.get(H("topic"),_topicTxd) ) {
                 _busyTxd=true;
@@ -70,6 +73,7 @@ void MqttSerial::run()
 {
     PT_BEGIN();
     _myUptimeTimer.atInterval(3000).doThis([this]() {
+        _mqttConnected=false;
         eb.publish("mqtt/disconnected");
         subscribe(_myUptime);
         Str sTime(10);
@@ -86,8 +90,11 @@ void MqttSerial::run()
             subscribe(_topicTxd);
             _busyTxd=false;
         } else if ( hasSignal(SIG_UPTIME_RECEIVED )) {
-            eb.publish("mqtt/connected");
-            _myUptimeTimer.atInterval(3000); // reset timer to next 3 sec 
+            _myUptimeTimer.atInterval(3000); // reset timer to next 3 sec
+            if ( !_mqttConnected ) {
+                eb.publish("mqtt/connected");
+                _mqttConnected=true;
+            }
         } else { // timeout
 
         }

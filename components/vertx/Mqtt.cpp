@@ -23,7 +23,15 @@ Mqtt::Mqtt(const char *name)
       _willMessage(30),
       _willQos(0),
       _willRetain(false),
-      _keepAlive(20),_topicIncoming(50),_topic(50),_message(100),_topicTxd(50),_messageTxd(100),_messageRxd(100),_topicRxd(50),_messageEb(100)
+      _keepAlive(20)
+	  ,_topicIncoming(50)
+	  ,_topic(50)
+	  ,_message(100)
+	  ,_topicTxd(50)
+	  ,_messageTxd(100)
+	  ,_messageRxd(100)
+	  ,_topicRxd(50)
+	  ,_messageEb(100)
 {
     _me = this;
     _mqttConnected = false;

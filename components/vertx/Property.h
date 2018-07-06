@@ -65,7 +65,7 @@ public:
 	T& _var;
 	T _oldVar;
 
-	PropertyReference(const char* name,T& var,uint32_t interval) : Property(name,interval),_var(var)
+	PropertyReference(const char* name,T& var,uint32_t interval) : Property(name,interval),_var(var),_oldVar(var)
 	{
 	}
 

@@ -36,6 +36,7 @@ Log logger(256);
 
 LedBlinker led("led1",DigitalOut::create(2));
 Monitor monitor("monitor");
+#define WIFI
 #ifdef WIFI
 Wifi wifi("wifi");
 Telnet telnet("telnet");
@@ -44,7 +45,7 @@ Mqtt mqtt("mqtt");
 #else
 MqttSerial mqtt("mqttSerial");
 #endif
-CoRoutineTask coRoutines("coRout"); // VerticleTask to handle all VerticleCoRoutine 
+CoRoutineTask coRoutines("coRout"); // VerticleTask to handle all VerticleCoRoutine
 PropertyVerticle prop("property");
 // Connector uext2(2);
 // D34 : L_IS
@@ -70,60 +71,65 @@ UltraSonic us("ultraSonic",uext3);*/
 //#include <Controller.h>
 //Controller controller("controller");
 #include <MotorSpeed.h>
-MotorSpeed motorSpeed("speed",36,39,25,26,32,33,34,35);
+//MotorSpeed motorSpeed("speed",36,39,25,26,32,33,34,35);
+/*
+Connector uext1(1);
+Connector uext2(2);
+UltraSonic us("ultrasonic",uext2);
+Compass compass("compass",uext1);*/
 
 class Tacho : public VerticleCoRoutine
 {
-    DigitalIn& _pinTacho;
-    DigitalOut& _pinPwmLeft;
-    DigitalOut& _pinPwmRight;
-    uint64_t _lastMeasurement;
-    uint32_t _delta;
-    uint32_t _rpm;
+	DigitalIn& _pinTacho;
+	DigitalOut& _pinPwmLeft;
+	DigitalOut& _pinPwmRight;
+	uint64_t _lastMeasurement;
+	uint32_t _delta;
+	uint32_t _rpm;
 public :
-    Tacho() : VerticleCoRoutine("tacho"),
-        _pinTacho(DigitalIn::create(35)),
-        _pinPwmLeft(DigitalOut::create(27)),
-        _pinPwmRight(DigitalOut::create(26))
-    {
-    }
-    void calcDelta(uint64_t t)
-    {
-        _delta = t-_lastMeasurement;
-        _lastMeasurement = t;
-        _rpm = ( 1000000*60  / _delta );
-    }
-    static void onRaise(void *p)
-    {
-        uint64_t t =  Sys::micros();
-        Tacho* tacho=(Tacho*)p;
-        tacho->calcDelta(t);
-    }
-    void start()
-    {
-        _pinTacho.onChange(DigitalIn::DIN_RAISE,onRaise,this);
-        _pinTacho.init();
-        _pinPwmLeft.init();
-        _pinPwmRight.init();
-        _pinPwmLeft.write(1);
-        _pinPwmRight.write(0);
-        new PropertyFunction<int32_t>("tacho/pin", [this]() {
-            return _pinTacho.read();
-        },1000);
-        new PropertyReference<uint32_t>("tacho/rpm",_rpm,1000);
+	Tacho() : VerticleCoRoutine("tacho"),
+		_pinTacho(DigitalIn::create(35)),
+		_pinPwmLeft(DigitalOut::create(27)),
+		_pinPwmRight(DigitalOut::create(26))
+	{
+	}
+	void calcDelta(uint64_t t)
+	{
+		_delta = t-_lastMeasurement;
+		_lastMeasurement = t;
+		_rpm = ( 1000000*60  / _delta );
+	}
+	static void onRaise(void *p)
+	{
+		uint64_t t =  Sys::micros();
+		Tacho* tacho=(Tacho*)p;
+		tacho->calcDelta(t);
+	}
+	void start()
+	{
+		_pinTacho.onChange(DigitalIn::DIN_RAISE,onRaise,this);
+		_pinTacho.init();
+		_pinPwmLeft.init();
+		_pinPwmRight.init();
+		_pinPwmLeft.write(1);
+		_pinPwmRight.write(0);
+		new PropertyFunction<int32_t>("tacho/pin", [this]() {
+			return _pinTacho.read();
+		},1000);
+		new PropertyReference<uint32_t>("tacho/rpm",_rpm,1000);
 
-        VerticleCoRoutine::start();
-    }
-    void run()
-    {
-        PT_BEGIN();
-        while(true) {
-            PT_WAIT_SIGNAL(100);
-            INFO(" tacho pin : %d rpm : %d ",_pinTacho.read(),_rpm);
-            if ( (Sys::micros() - _lastMeasurement) > 1000000 ) _rpm=0;
-        }
-        PT_END();
-    }
+		VerticleCoRoutine::start();
+	}
+	void run()
+	{
+		PT_BEGIN();
+		while(true) {
+			PT_WAIT_SIGNAL(100);
+			INFO(" tacho pin : %d rpm : %d ",_pinTacho.read(),_rpm);
+			if ( (Sys::micros() - _lastMeasurement) > 1000000 ) _rpm=0;
+		}
+		PT_END();
+	}
 };
 
 //Tacho tacho;
@@ -137,32 +143,63 @@ public :
 // D27 : R_PWM
 //Pwm pwm("pwm",26,27,25,36,35);
 
+void setHostname()
+{
+	nvs_flash_init();
+
+	config.load();
+
+	config.setNameSpace("system");
+
+	Str hn(20);
+	hn ="ESP-";
+	uint64_t serial=Sys::getSerialId();
+	hn.appendHex((uint8_t*)&serial,6,0);
+	config.get("host",hn,hn.c_str());
+	INFO(" host : %s",hn.c_str());
+	Sys::hostname(hn.c_str());
+}
+
+void loadServices()
+{
+	Str service(30);
+	Str uextKey(10);
+	config.setNameSpace("services");
+	for(uint32_t idx=1; idx<3; idx++) {
+		uextKey="uext";
+		uextKey.append(idx);
+		config.get(uextKey.c_str(),service,"null");
+
+		if ( !(service=="null" )) {
+			Connector uext(idx);
+			if ( service=="UltraSonic") {
+				new UltraSonic("ultrasonic",uext);
+			} else if  ( service=="Compass" ) {
+				new Compass("compass",uext);
+			} else if ( service=="MotorSpeed") {
+				new MotorSpeed("motorSpeed",uext);
+			}
+		}
+
+	}
+}
+
 extern "C" void app_main()
 {
 //       config.clear();
-    nvs_flash_init();
+	setHostname();
+	loadServices();
 
-    config.load();
-    config.setNameSpace("system");
+	eb.on("mqtt/connected", [](Message& evt) {
+		led.setInterval(1000);
+	});
+	eb.on("mqtt/disconnected", [](Message& evt) {
+		led.setInterval(100);
+	});
 
-    Str hn(20);
-    hn ="ESP-";
-    uint64_t serial=Sys::getSerialId();
-    hn.appendHex((uint8_t*)&serial,6,0);
-    config.get("host",hn,hn.c_str());
-    INFO(" host : %s",hn.c_str());
-    Sys::hostname(hn.c_str());
+	Verticle* pv;
+	for(pv=Verticle::first(); pv; pv=pv->next())
+		pv->start();
 
-    eb.on("mqtt/connected", [](Message& evt) {
-        led.setInterval(1000);
-    });
-    eb.on("mqtt/disconnected", [](Message& evt) {
-        led.setInterval(100);
-    });
-
-    Verticle* pv;
-    for(pv=Verticle::first(); pv; pv=pv->next())
-        pv->start();
-
-    config.save();
+	config.save();
 }

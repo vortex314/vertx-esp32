@@ -42,21 +42,8 @@ Erc EventBus::consumer(EventLabel address,EventHandler f)
     return E_OK;
 }
 
-Erc EventBus::publish(EventLabel address,Message& message)
-{
-//    INFO(" %s %s ",__func__,address);
-//    INFO("IN %s",__func__);
-    static  portMUX_TYPE mux= portMUX_INITIALIZER_UNLOCKED;
-    Erc erc;
-    uid_t uid = H(address);
-    message.put(EB_DST,uid);
-    taskENTER_CRITICAL(  &mux);
-    erc = _queue.put(message);
-    taskEXIT_CRITICAL( &mux );
-//    INFO("OUT %s",__func__);
-    if ( erc ) ERROR(" cannot publish to eventbus !!");
-    return E_OK;
-}
+
+
 
 Erc EventBus::publish(EventLabel label)
 {
@@ -67,15 +54,32 @@ Erc EventBus::publish(EventLabel label)
 
 Message _rxd(256);
 
+#ifdef ESP32_IDF
+Erc EventBus::publish(EventLabel address,Message& message)
+{
+//    INFO(" %s %s ",__func__,address);
+//    INFO("IN %s",__func__);
+    static  portMUX_TYPE mux= portMUX_INITIALIZER_UNLOCKED;
+    Erc erc;
+    uid_t uid = H(address);
+    message.put(EB_DST,uid);
+    portENTER_CRITICAL(  &mux);
+    erc = _queue.put(message);
+    portEXIT_CRITICAL( &mux );
+//    INFO("OUT %s",__func__);
+    if ( erc ) ERROR(" cannot publish to eventbus !!");
+    return E_OK;
+}
+
 void EventBus::eventLoop()
 {
     static portMUX_TYPE mux= portMUX_INITIALIZER_UNLOCKED;
     Erc erc;
     Consumer* consumer;
     uid_t uidDst;
-    taskENTER_CRITICAL(&mux  );
+    portENTER_CRITICAL(&mux  );
     erc = _queue.get(_rxd);
-    taskEXIT_CRITICAL(&mux  );
+    portEXIT_CRITICAL(&mux  );
 
     if ( erc ==0  && _rxd.get(EB_DST,uidDst) ) {
         for(consumer=Consumer::first(); consumer; consumer=consumer->next()) {
@@ -85,3 +89,39 @@ void EventBus::eventLoop()
         }
     }
 }
+#else
+Erc EventBus::publish(EventLabel address,Message& message)
+{
+//    INFO(" %s %s ",__func__,address);
+//    INFO("IN %s",__func__);
+    Erc erc;
+    uid_t uid = H(address);
+    message.put(EB_DST,uid);
+    taskENTER_CRITICAL();
+    erc = _queue.put(message);
+    taskEXIT_CRITICAL( );
+//    INFO("OUT %s",__func__);
+    if ( erc ) ERROR(" cannot publish to eventbus !!");
+    return E_OK;
+}
+
+void EventBus::eventLoop()
+{
+    Erc erc;
+    Consumer* consumer;
+    uid_t uidDst;
+    taskENTER_CRITICAL(  );
+    erc = _queue.get(_rxd);
+    taskEXIT_CRITICAL(  );
+
+    if ( erc ==0  && _rxd.get(EB_DST,uidDst) ) {
+        for(consumer=Consumer::first(); consumer; consumer=consumer->next()) {
+            if ( uidDst == consumer->_eventUid) {
+                consumer->_handler(_rxd);
+            }
+        }
+    }
+}
+#endif
+
+

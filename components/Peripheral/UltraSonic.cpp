@@ -30,7 +30,7 @@ void UltraSonic::run()
 {
     PT_BEGIN();
     while(true) {
-        PT_WAIT_SIGNAL(100);
+        PT_WAIT_SIGNAL(20);
         int cm = _hcsr.getCentimeters();
 
         if (cm < 400 && cm > 0) {

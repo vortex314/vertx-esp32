@@ -827,6 +827,7 @@ UART& UART::create(PhysicalPin txd, PhysicalPin rxd)
 */
 Connector::Connector(uint32_t idx)    // defined by PCB layout
 {
+	/* OLD PCB 
     if (idx == 1) {
         _physicalPins[LP_TXD] = 17;
         _physicalPins[LP_RXD] = 16;
@@ -854,7 +855,28 @@ Connector::Connector(uint32_t idx)    // defined by PCB layout
         _physicalPins[LP_MOSI] = 39;
         _physicalPins[LP_SCK] = 34;
         _physicalPins[LP_CS] = 35;
+    }*/
+	 if (idx == 1) {
+        _physicalPins[LP_TXD] = 19;
+        _physicalPins[LP_RXD] = 36;
+        _physicalPins[LP_SCL] = 25;
+        _physicalPins[LP_SDA] = 26;
+        _physicalPins[LP_MISO] = 34;
+        _physicalPins[LP_MOSI] = 23;
+        _physicalPins[LP_SCK] = 17;
+        _physicalPins[LP_CS] = 32;
+    } else if (idx == 2) {
+        _physicalPins[LP_TXD] = 18;
+        _physicalPins[LP_RXD] = 39;
+        _physicalPins[LP_SCL] = 27;
+        _physicalPins[LP_SDA] = 14;
+        _physicalPins[LP_MISO] = 35;
+        _physicalPins[LP_MOSI] = 22;
+        _physicalPins[LP_SCK] = 16;
+        _physicalPins[LP_CS] = 33;
     }
+	
+	
     _spi = 0;
     _i2c = 0;
     _uart = 0;

@@ -825,6 +825,10 @@ UART& UART::create(PhysicalPin txd, PhysicalPin rxd)
  #####    ####   #    #  #    #  ######   ####      #     ####   #    #
 
 */
+
+const char *logicalPinNames[]= {"TXD","RXD","SCL","SDA","MISO","MOSI","SCK","CS"
+                         } ;
+
 Connector::Connector(uint32_t idx)    // defined by PCB layout
 {
 	/* OLD PCB 
@@ -886,8 +890,12 @@ Connector::Connector(uint32_t idx)    // defined by PCB layout
 
 PhysicalPin Connector::toPin(uint32_t logicalPin)
 {
-    INFO(" logical %d => %d physical ", logicalPin, _physicalPins[logicalPin]);
+//    INFO(" logical %s[%d] => GPIO_%d physical ", uextPin(logicalPin) ,logicalPin, _physicalPins[logicalPin]);
     return _physicalPins[logicalPin];
+}
+
+const char* Connector::uextPin(uint32_t logicalPin) {
+    return logicalPinNames[logicalPin];
 }
 
 const char* sLogicalPin[]= {"TXD","RXD","SCL","SDA","MISO","MOSI","SCK","CS"};

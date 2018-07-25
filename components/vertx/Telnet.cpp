@@ -270,7 +270,7 @@ Erc Telnet::readLine(Str& str)
 
     while (true) {
         c = getChar();
-        INFO("%x",c);
+ //       INFO("%x",c);
         if ( c == 0 ) {
             return ENODATA;
         } else if (c == '\r' ) {
